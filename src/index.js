@@ -1,5 +1,5 @@
 const express = require("express");
-const cors = requerie("cors");
+const cors = require("cors");
 const clienteRouter = require("./routes/cliente");
 const externoRouter = require("./routes/externo");
 const logRouter = require("./routes/log");
@@ -10,7 +10,7 @@ const suscripcionesRouter = require("./routes/suscripciones");
 const usuarioRouter = require("./routes/usuario");
 
 const app = express();
-const PORT = 8080;
+const PORT = 80;
 
 app.use(express.json());
 app.use(cors({ credentials: false, origin: "*" }));
