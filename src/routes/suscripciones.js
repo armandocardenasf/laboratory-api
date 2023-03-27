@@ -7,6 +7,6 @@ const router = express.Router();
 //GET /suscripciones
 router.get("/", suscriptionsController.getSuscripciones);
 //POST /suscripciones/ById
-router.get("/ById", suscriptionsController.getSuscripcionesById);
+router.post("/ById", suscriptionsController.getSuscripcionesById);
 
 module.exports = router;

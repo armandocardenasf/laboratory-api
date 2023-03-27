@@ -6,7 +6,7 @@ const router = express.Router();
 router.get("/", oUsuarioController.getUsuarios);
 
 //GET   /usuario/byid
-router.get("/byid", oUsuarioController.getUsuarioById);
+router.post("/byid", oUsuarioController.getUsuarioById);
 
 //POST  /usuario
 router.post("/", oUsuarioController.insertUsuario);
