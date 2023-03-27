@@ -1,5 +1,5 @@
 const express = require("express");
-const cors = requerie("cors");
+const cors = require("cors");
 const clienteRouter = require("./routes/cliente");
 const externoRouter = require("./routes/externo");
 const logRouter = require("./routes/log");
