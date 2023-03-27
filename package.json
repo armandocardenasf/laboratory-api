@@ -4,7 +4,7 @@
   "description": "An API for a lab app.",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon -L server.js"
+    "start": "nodemon -L src/server.js"
   },
   "author": "",
   "license": "ISC",
