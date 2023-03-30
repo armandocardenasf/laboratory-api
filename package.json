@@ -2,7 +2,7 @@
   "name": "laboratory-api",
   "version": "1.0.0",
   "description": "An API for a lab app.",
-  "main": "server.js",
+  "main": "src/server.js",
   "scripts": {
     "start": "nodemon -L src/server.js"
   },

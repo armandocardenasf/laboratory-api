@@ -5,7 +5,7 @@ const router = express.Router();
 //GET   /cliente
 router.get("/", clienteController.getCliente);
 
-//GET   /cliente/byid
+//POST   /cliente/byid
 router.post("/byid", clienteController.getClienteById);
 
 //POST  /cliente

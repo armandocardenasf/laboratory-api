@@ -5,7 +5,7 @@ const router = express.Router();
 //GET   /parametros
 router.get("/", parametrosController.getParametros);
 
-//GET   /parametros/byResultadoId
+//POST   /parametros/byResultadoId
 router.post("/byResultadoId", parametrosController.getParametrosByResultadoId);
 
 //POST  /parametros

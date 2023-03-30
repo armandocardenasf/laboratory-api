@@ -8,6 +8,6 @@ const router = express.Router();
 router.post("/", logsController.getLogs);
 
 //POST /log
-router.post("/", logsController.insertLogs);
+router.post("/insert", logsController.insertLogs);
 
 module.exports = router;

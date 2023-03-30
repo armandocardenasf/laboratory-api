@@ -10,7 +10,8 @@ const suscripcionesRouter = require("./routes/suscripciones");
 const usuarioRouter = require("./routes/usuario");
 
 const app = express();
-const PORT = 8080;
+
+const PORT = 80;
 
 app.use(express.json());
 app.use(cors({ credentials: false, origin: "*" }));
