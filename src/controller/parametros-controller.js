@@ -13,7 +13,7 @@ const getParametros = (req, res) => {
   });
 };
 const getParametrosByResultadoId = (req, res) => {
-  const { oResultadoId } = req.body;
+  const oResultadoId = req.params["resultId"];
 
   const query = "CALL GetParametroByResultadoIdSP(?);";
 
@@ -25,6 +25,20 @@ const getParametrosByResultadoId = (req, res) => {
     }
   });
 };
+
+const getParametroById = (req, res) => {
+  const oParametroId = req.paramas["parameterId"];
+
+  const query = 'CALL GetParametroByIdSP(?);';
+  oMySQLConnection.query(query, [oParametroId], (err, rows) => {
+    if (!err) {
+      res.json(rows);
+    } else {
+      res.status(400).send("Bad request.")
+    }
+  })
+}
+
 const insertParametro = (req, res) => {
   const { oNombre, oValor, oUnidades } = req.body;
 
@@ -75,6 +89,7 @@ const deleteParametro = (req, res) => {
 module.exports = {
   getParametros,
   getParametrosByResultadoId,
+  getParametroById,
   insertParametro,
   updateParametro,
   deleteParametro,
