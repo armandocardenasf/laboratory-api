@@ -12,19 +12,34 @@ const getResultados = (req, res) => {
     }
   });
 };
+
 const getResultadoByClienteId = (req, res) => {
-  const { oClienteId } = req.body;
+  const oClienteId = req.params["clientId"];
+  const { oResultadoId } = req.body;
 
-  const query = "CALL GetResultadoByClienteIdSP(?);";
+  const query = 'CALL GetResultadoByClienteId(?, ?);';
+  oMySQLConnection.query(query, [oClienteId, oResultadoId], (err, rows) => {
+    if (!err) {
+      res.json(rows);
+    } else {
+      res.status(400).send("Bad request.");
+    }
+  })
+}
 
+const getAllResultadosByClienteId = (req, res) => {
+  const oClienteId = req.params["clientId"];
+
+  const query = "CALL GetAllResultadosByClienteIdSP(?);";
   oMySQLConnection.query(query, [oClienteId], (err, rows, fields) => {
     if (!err) {
       res.json(rows);
     } else {
-      console.log(err);
+      res.status(400).send("Bad request.")
     }
   });
 };
+
 const insertResultado = (req, res) => {
   const {
     oMuestra,
@@ -117,6 +132,7 @@ const deleteResultado = (req, res) => {
 module.exports = {
   getResultados,
   getResultadoByClienteId,
+  getAllResultadosByClienteId,
   insertResultado,
   updateResultado,
   deleteResultado,

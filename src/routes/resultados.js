@@ -5,8 +5,11 @@ const router = express.Router();
 //GET   /resultados
 router.get("/", resultadosController.getResultados);
 
-//POST   /resultados/byClienteId
-router.post("/byClienteId", resultadosController.getResultadoByClienteId);
+//GET   /resultados/all/:clientId
+router.get("/all/:clientId", resultadosController.getAllResultadosByClienteId);
+
+//POST   /resultados/:clientId
+router.post("/:clientId", resultadosController.getResultadoByClienteId);
 
 //POST  /resultados
 router.post("/", resultadosController.insertResultado);
