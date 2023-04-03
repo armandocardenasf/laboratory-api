@@ -8,6 +8,9 @@ router.get("/", externoParametro.getExterno);
 //POST   /externo/byid
 router.post("/byid", externoParametro.getExternoById);
 
+//POST   /externo/byUserid
+router.post("/byUserid", externoParametro.getExternoByUserId);
+
 //POST  /externo
 router.post("/", externoParametro.insertExterno);
 
