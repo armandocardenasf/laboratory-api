@@ -19,7 +19,7 @@ const upload = multer({
 });
 
 // POST     files/insertFile
-router.post('/insertFile', upload.single("csvFile"), (req, res) => {
+router.post('/insertFile', upload.single("csvFile"), async (req, res) => {
     const { userId } = req.body;
 
     const csvData = req.file.buffer.toString();
@@ -32,49 +32,58 @@ router.post('/insertFile', upload.single("csvFile"), (req, res) => {
         })
         .on("data", (data) => results.push(data))
         .on("end", () => {
-            res.status(200).send("File uploaded successfully.")
+            console.log("Data successfully uploaded.");
         })
         .write(csvData);
-        
-    const idColumns = getParametersId();
+            
+    const idParameters = await getParametersId(header);
 
-    for (const analysis of results) {
-        // see if result is already in db.
-        const query = 'SELECT `COUNT(muestra)` FROM `cevitdb.resultados` WHERE `muestra` = ?;';
-        const count = oMySQLConnection.query(query, [analysis["FOLIO"]], (err, res) => {
-            if (err) {
-                res.status(400).send("An error has occurred.");
+    try {
+        for (const analysis of results) {
+            // see if result is already in db.
+            const count = await countResults(analysis["FOLIO"]);
+
+            let resultId;
+            if (count > 0) {
+                resultId = await getResultId(analysis["FOLIO"], userId);
+            } else {
+                resultId = await insertResult(analysis, userId);
             }
-        })
 
-        let id;
-        if (count > 0) {
-            id = getResultId(analysis["FOLIO"], userId);
-        } else {
-            id = insertResult(analysis, userId);
+            for (const [parameter, idParameter] of Object.entries(idParameters)) {
+                await insertResultParameter(idParameter, resultId, analysis[parameter]);
+            }
         }
-
-        // insert parameters.
-        
+    } catch (e) {
+        console.log(e);
+        res.status(500).send("Something went wrong.");
+        return;
     }
 
-    res.status(200).send("yes");
+    res.status(200).send("Data insertion completed successfully.");
 })
 
-const getParametersId = () => {
+const countResults = async (muestra) => {
+    const query = 'SELECT COUNT(muestra) AS `count` FROM `resultados` WHERE `muestra` = ?;';
+    const [rows, fields] = await oMySQLConnection.promise().query(query, [muestra]);
+    return rows[0].count;
+}
+
+const insertResultParameter = async (parametros_id, resultados_id, valor) => {
+    const query = 'CALL insertResultParameter(?, ?, ?);';
+    await oMySQLConnection.promise().query(query, [parametros_id, resultados_id, valor]);
+}
+
+const getParametersId = async (header) => {
     const idColumns = Object();
 
     for (const column of header) {
-        const query = 'CALL getParameterId(?)';
+        const query = 'CALL getParameterId(?, @parameter_id)';
 
         let parameter_id = null;
-        oMySQLConnection.query(query, [column], (err, res) => {
-            if (err) {
-                res.status(400).send("An error has occurred.");
-            } else {
-                parameter_id = res[0][0].parameter_id;
-            }
-        });
+        const [rows, fields] = await oMySQLConnection.promise().query(query, [column]);
+
+        parameter_id = rows[0][0].parameter_id;
 
         if (parameter_id) {
             idColumns[column] = parameter_id;
@@ -83,33 +92,25 @@ const getParametersId = () => {
     return idColumns;
 }
 
-const insertResult = (analysis, userId) => {
-    const query = "CALL insertResult(?, ?, ?, ?, ?, ?, ?, ?, ?);";
-    return oMySQLConnection.query(query, [
+const insertResult = async (analysis, userId) => {
+    const query = "CALL insertResult(?, ?, ?, ?, ?, ?, ?, ?, ?, @result_id);";
+    await oMySQLConnection.promise().query(query, [
         analysis["FOLIO"], // muestra
-        anlaysis["Modelo"] === "Vino" ? 1 : 0, // tipo_muestra
+        analysis["Modelo"] === "Vino" ? 1 : 0, // tipo_muestra
         analysis["Fecha Muestreo"], // fecha_muestra
         analysis["Fecha Recepcion"], // fecha_recepcion
-        analysis["Cantidad de Muestras"], // cantidad_muestras 
+        analysis["Cantidad de Muestras"] === "" ? 0 : parseInt(analysis["Cantidad de Muestras"]), // cantidad_muestras 
         analysis["Fecha Analisis"], // fecha_analisis
         analysis["Fecha Informe"], // fecha_informe
         analysis["Hora Analisis"], // hora_analisis
         userId, // cliente_id
-    ], 
-    (err, res) => {
-        if (err) {
-            res.status(400).send("An error has occurred.");
-        }
-    })
+    ]);
 }
 
-const getResultId = (muestra, userId) => {
-    const query = 'CALL getResultId(?)';
-    return oMySQLConnection.query(query, [muestra, userId], (err, res) => {
-        if (err) {
-            res.status(400).send("An error has occurred.");
-        }
-    })
+const getResultId = async (muestra, userId) => {
+    const query = 'CALL getResultId(?, ?, @result_id)';
+    const [rows, fields] = await oMySQLConnection.promise().query(query, [muestra, userId]);
+    return rows[0].result_id;
 }
 
 module.exports = router;
