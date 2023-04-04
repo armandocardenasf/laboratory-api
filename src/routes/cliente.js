@@ -7,6 +7,8 @@ router.get("/", clienteController.getCliente);
 
 //POST   /cliente/byid
 router.post("/byid", clienteController.getClienteById);
+//POST   /cliente/byid
+router.post("/byExternoId", clienteController.getClienteByExternoId);
 
 //POST  /cliente
 router.post("/", clienteController.insertCliente);

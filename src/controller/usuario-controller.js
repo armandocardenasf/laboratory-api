@@ -15,7 +15,7 @@ const getUsuarios = (req, res) => {
 const getUsuarioById = (req, res) => {
   const { oUsuarioId } = req.body;
 
-  const query = "CALL GetUsuarioByIdSP(?);";
+  const query = "CALL GetUsuarioById(?);";
 
   oMySQLConnection.query(query, [oUsuarioId], (err, rows, fields) => {
     if (!err) {
@@ -44,14 +44,14 @@ const insertUsuario = (req, res) => {
 };
 
 const updateUsuario = (req, res) => {
-  const { oUsuarioId, oNombre, oApellido, oCorreo, oPass, oTelefono, oRolId } =
+  const { oUsuarioId, oNombre, oApellido, oCorreo,  oTelefono, oRolId } =
     req.body;
 
-  const query = "CALL UpdateUsuarioSP(?,?,?,?,?,?,?);";
+  const query = "CALL UpdateUsuarioSP(?,?,?,?,?,?);";
 
   oMySQLConnection.query(
     query,
-    [oUsuarioId, oNombre, oApellido, oCorreo, oPass, oTelefono, oRolId],
+    [oUsuarioId, oNombre, oApellido, oCorreo,  oTelefono, oRolId],
     (err, rows, fields) => {
       if (!err) {
         res.json(rows);
@@ -64,7 +64,7 @@ const updateUsuario = (req, res) => {
 const updatePass = (req, res) => {
   const { oUsuarioId, oPass } = req.body;
 
-  const query = "CALL UpdateUsuarioSP(?,?);";
+  const query = "CALL UpdatePasswordSP(?,?);";
 
   oMySQLConnection.query(query, [oUsuarioId, oPass], (err, rows, fields) => {
     if (!err) {
@@ -91,7 +91,7 @@ const deleteUsuario = (req, res) => {
 
 const getLogin = (req, res) => {
   const { oUser, oPass } = req.body;
-  const query = "CALL GetLoginSP(?,?);";
+  const query = "CALL LoginSP(?,?);";
 
   oMySQLConnection.query(query, [oUser, oPass], (err, rows, fields) => {
     if (!err) {
