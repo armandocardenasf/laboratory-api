@@ -22,6 +22,10 @@ const upload = multer({
 router.post('/insertFile', upload.single("csvFile"), async (req, res) => {
     const { userId } = req.body;
 
+    if (!req.file || !req.file.buffer) {
+        return res.status(400).json({ error: 'No file uploaded' });
+    }
+
     const csvData = req.file.buffer.toString();
 
     let header = null;
@@ -50,8 +54,21 @@ router.post('/insertFile', upload.single("csvFile"), async (req, res) => {
                 resultId = await insertResult(analysis, userId);
             }
 
+            if (!resultId) {
+                continue;
+            }
+
             for (const [parameter, idParameter] of Object.entries(idParameters)) {
-                await insertResultParameter(idParameter, resultId, analysis[parameter]);
+                try {
+                    await insertResultParameter(idParameter, resultId, analysis[parameter]);
+                } catch(e) {
+                    if (e.code === 'ER_DUP_ENTRY') {
+                        // ignore dupllicate entries
+                        continue;
+                    } else {
+                        throw Error(e.code);
+                    }
+                }
             }
         }
     } catch (e) {
@@ -94,7 +111,7 @@ const getParametersId = async (header) => {
 
 const insertResult = async (analysis, userId) => {
     const query = "CALL insertResult(?, ?, ?, ?, ?, ?, ?, ?, ?, @result_id);";
-    await oMySQLConnection.promise().query(query, [
+    const [rows, fields] = await oMySQLConnection.promise().query(query, [
         analysis["FOLIO"], // muestra
         analysis["Modelo"] === "Vino" ? 1 : 0, // tipo_muestra
         analysis["Fecha Muestreo"], // fecha_muestra
@@ -105,12 +122,14 @@ const insertResult = async (analysis, userId) => {
         analysis["Hora Analisis"], // hora_analisis
         userId, // cliente_id
     ]);
+    console.log(rows[0][0].result_id);
+    return rows[0][0].result_id;
 }
 
 const getResultId = async (muestra, userId) => {
     const query = 'CALL getResultId(?, ?, @result_id)';
     const [rows, fields] = await oMySQLConnection.promise().query(query, [muestra, userId]);
-    return rows[0].result_id;
+    return rows[0][0].result_id;
 }
 
 module.exports = router;
