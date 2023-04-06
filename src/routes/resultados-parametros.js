@@ -12,6 +12,10 @@ router.get("/:resultParameterId", parametrosController.getParametroById);
 //POST  /resultados-parametros/date
 router.post("/date", parametrosController.getParametrosByFecha);
 
-//PUT   /resultados-parametros/:resultParameterId
+//PUT   /resultados-parametros
+router.put("/", parametrosController.updateResultadoParametro);
+
+//DELETE    /resultados-parametros
+router.delete("/", parametrosController.deleteResultadoParametro);
 
 module.exports = router;
