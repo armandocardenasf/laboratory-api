@@ -1,5 +1,6 @@
 const oMySQLConnection = require("../database");
 
+
 const getResultados = (req, res) => {
   const query = "CALL GetResultadoSP();";
   oMySQLConnection.query(query, (err, rows, fields) => {
