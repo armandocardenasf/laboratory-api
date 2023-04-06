@@ -5,8 +5,14 @@ const router = express.Router();
 //GET   /parametros
 router.get("/", parametrosController.getParametros);
 
-//GET   /parametros/byResultadoId
-router.post("/byResultadoId", parametrosController.getParametrosByResultadoId);
+//GET   /parametros/res/:resultId
+router.get("/res/:resultId", parametrosController.getParametrosByResultadoId);
+
+//GET   /parametros/:parameterId
+router.get("/:parameterId", parametrosController.getParametroById);
+
+//POST  /parametros/date
+router.post("/date", parametrosController.getParametrosByFecha);
 
 //POST  /parametros
 router.post("/", parametrosController.insertParametro);

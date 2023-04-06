@@ -8,9 +8,11 @@ const resultadosRouter = require("./routes/resultados");
 const rolesRouter = require("./routes/roles");
 const suscripcionesRouter = require("./routes/suscripciones");
 const usuarioRouter = require("./routes/usuario");
+const filesRouter = require("./routes/files");
 
 const app = express();
-const PORT = 8080;
+
+const PORT = 80;
 
 app.use(express.json());
 app.use(cors({ credentials: false, origin: "*" }));
@@ -27,6 +29,7 @@ app.use("/resultados", resultadosRouter);
 app.use("/roles", rolesRouter);
 app.use("/suscripciones", suscripcionesRouter);
 app.use("/usuario", usuarioRouter);
+app.use("/files", filesRouter);
 
 app.listen(PORT, () => {
   console.log(`SERVER IS RUNNING IN ${PORT}`);

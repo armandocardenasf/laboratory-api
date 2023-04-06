@@ -6,6 +6,7 @@ const router = express.Router();
 
 //GET /roles
 router.get("/", rolesController.getRoles);
+
 //POST /roles/ById
 router.post("/ById", rolesController.getRolesById);
 

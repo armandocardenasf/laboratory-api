@@ -5,7 +5,7 @@ const router = express.Router();
 //GET   /usuario
 router.get("/", oUsuarioController.getUsuarios);
 
-//GET   /usuario/byid
+//POST   /usuario/byid
 router.post("/byid", oUsuarioController.getUsuarioById);
 
 //POST  /usuario
@@ -13,6 +13,7 @@ router.post("/", oUsuarioController.insertUsuario);
 
 //PUT   /usuario
 router.put("/", oUsuarioController.updateUsuario);
+
 //PUT   /usuario/pass
 router.put("/pass", oUsuarioController.updatePass);
 

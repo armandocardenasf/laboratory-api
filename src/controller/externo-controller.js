@@ -15,9 +15,22 @@ const getExterno = (req, res) => {
 const getExternoById = (req, res) => {
   const { oExternoId } = req.body;
 
-  const query = "CALL GetExternoByIdSP(?);";
+  const query = "CALL GetExternoById(?);";
 
   oMySQLConnection.query(query, [oExternoId], (err, rows, fields) => {
+    if (!err) {
+      res.json(rows);
+    } else {
+      console.log(err);
+    }
+  });
+};
+const getExternoByUserId = (req, res) => {
+  const { oUserId } = req.body;
+
+  const query = "CALL GetExternoByUserIdSP(?);";
+
+  oMySQLConnection.query(query, [oUserId], (err, rows, fields) => {
     if (!err) {
       res.json(rows);
     } else {
@@ -77,7 +90,7 @@ const updateExterno = (req, res) => {
     oUsuarioId,
   } = req.body;
 
-  const query = "CALL UpdateExternoSP(?,?,?,?,?,?,?,?,?);";
+  const query = "CALL UpdateExternoSP(?,?,?,?,?,?,?,?,?,?);";
 
   oMySQLConnection.query(
     query,
@@ -120,6 +133,7 @@ const deleteExterno = (req, res) => {
 module.exports = {
   getExterno,
   getExternoById,
+  getExternoByUserId,
   insertExterno,
   updateExterno,
   deleteExterno,
