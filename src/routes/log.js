@@ -1,7 +1,5 @@
 const express = require("express");
-
 const logsController = require("../controller/log-controller");
-
 const router = express.Router();
 
 //POST /log
