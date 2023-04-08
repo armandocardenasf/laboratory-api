@@ -11,8 +11,9 @@ const oMySQLConnection = require("../database");
 const upload = multer({
     storage: multer.memoryStorage(),
     fileFilter: (req, file, cb) => {
-        if (file.mimetype !== 'text/csv') {
-            return cb(new Error("Only CSV files are allowed."));
+        if (file.mimetype !== 'text/csv' && file.mimetype !== 'application/vnd.ms-excel' &&
+            file.mimetype !== 'application/csv') {
+                return cb(new Error("Only CSV files are allowed."));
         }
         return cb(null, true);
     }
