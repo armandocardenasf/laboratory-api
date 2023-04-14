@@ -1,8 +1,7 @@
 const oMySQLConnection = require("../database");
 
-
 const getResultados = (req, res) => {
-  const query = "CALL GetResultadoSP();";
+  const query = "CALL GetResultadosSP();";
   oMySQLConnection.query(query, (err, rows, fields) => {
     if (!err) {
       console.log(rows);
@@ -18,15 +17,15 @@ const getResultadoByClienteId = (req, res) => {
   const oClienteId = req.params["clientId"];
   const { oResultadoId } = req.body;
 
-  const query = 'CALL GetResultadoByClienteId(?, ?);';
+  const query = "CALL GetResultadoByClienteId(?, ?);";
   oMySQLConnection.query(query, [oClienteId, oResultadoId], (err, rows) => {
     if (!err) {
       res.json(rows);
     } else {
       res.status(400).send("Bad request.");
     }
-  })
-}
+  });
+};
 
 const getAllResultadosByClienteId = (req, res) => {
   const oClienteId = req.params["clientId"];
@@ -36,7 +35,7 @@ const getAllResultadosByClienteId = (req, res) => {
     if (!err) {
       res.json(rows);
     } else {
-      res.status(400).send("Bad request.")
+      res.status(400).send("Bad request.");
     }
   });
 };
