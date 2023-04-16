@@ -14,11 +14,10 @@ const getResultados = (req, res) => {
 };
 
 const getResultadoByClienteId = (req, res) => {
-  const oClienteId = req.params["clientId"];
-  const { oResultadoId } = req.body;
+  const { oClienteId } = req.body;
 
-  const query = "CALL GetResultadoByClienteId(?, ?);";
-  oMySQLConnection.query(query, [oClienteId, oResultadoId], (err, rows) => {
+  const query = "CALL GetResultadoByClienteIdSP(?);";
+  oMySQLConnection.query(query, [oClienteId], (err, rows) => {
     if (!err) {
       res.json(rows);
     } else {

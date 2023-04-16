@@ -8,8 +8,8 @@ router.get("/", resultadosController.getResultados);
 //GET   /resultados/all/:clientId
 router.get("/all/:clientId", resultadosController.getAllResultadosByClienteId);
 
-//POST   /resultados/:clientId
-router.post("/:clientId", resultadosController.getResultadoByClienteId);
+//POST   /resultados/byClienteId
+router.post("/byClienteId", resultadosController.getResultadoByClienteId);
 
 //POST  /resultados
 router.post("/", resultadosController.insertResultado);
