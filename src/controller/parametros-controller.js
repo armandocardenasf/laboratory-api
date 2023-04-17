@@ -1,6 +1,6 @@
 const oMySQLConnection = require("../database");
 
-
+//GETS
 const getParametros = (req, res) => {
   const query = "CALL GetResultadoSP();";
   oMySQLConnection.query(query, (err, rows, fields) => {
@@ -12,6 +12,8 @@ const getParametros = (req, res) => {
     }
   });
 };
+
+//CREATES
 const insertParametro = (req, res) => {
   const { oNombre, oValor, oUnidades } = req.body;
 
@@ -29,6 +31,8 @@ const insertParametro = (req, res) => {
     }
   );
 };
+
+//UPDATES
 const updateParametro = (req, res) => {
   const { oParametroId, oNombre, oValor, oUnidades } = req.body;
 
@@ -46,6 +50,8 @@ const updateParametro = (req, res) => {
     }
   );
 };
+
+//DELETES
 const deleteParametro = (req, res) => {
   const { oParametroId } = req.body;
 
@@ -60,6 +66,7 @@ const deleteParametro = (req, res) => {
   });
 };
 
+//EXPORTS
 module.exports = {
   getParametros,
   insertParametro,

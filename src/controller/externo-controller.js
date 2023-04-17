@@ -1,5 +1,6 @@
 const oMySQLConnection = require("../database");
 
+//GETS
 const getExterno = (req, res) => {
   const query = "CALL GetExternoSP();";
   oMySQLConnection.query(query, (err, rows, fields) => {
@@ -38,6 +39,8 @@ const getExternoByUserId = (req, res) => {
     }
   });
 };
+
+//CREATES
 const insertExterno = (req, res) => {
   const {
     oNoFolio,
@@ -76,6 +79,7 @@ const insertExterno = (req, res) => {
   );
 };
 
+//UPDATES
 const updateExterno = (req, res) => {
   const {
     oExternoId,
@@ -116,6 +120,7 @@ const updateExterno = (req, res) => {
   );
 };
 
+//DELETES
 const deleteExterno = (req, res) => {
   const { oExternoId } = req.body;
 
@@ -130,6 +135,7 @@ const deleteExterno = (req, res) => {
   });
 };
 
+//EXPORTS
 module.exports = {
   getExterno,
   getExternoById,

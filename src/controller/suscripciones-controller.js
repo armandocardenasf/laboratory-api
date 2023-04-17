@@ -1,5 +1,6 @@
 const oMySQLConnection = require("../database");
 
+//GETS
 const getSuscripciones = (req, res) => {
   const query = "CALL GetSuscripcionSP();";
   oMySQLConnection.query(query, (err, rows, fields) => {
@@ -23,6 +24,7 @@ const getSuscripcionesById = (req, res) => {
   });
 };
 
+//EXPORTS
 module.exports = {
   getSuscripciones,
   getSuscripcionesById,

@@ -1,5 +1,6 @@
 const oMySQLConnection = require("../database");
 
+//GETS
 const getUsuarios = (req, res) => {
   const query = "CALL GetUsuarioSP();";
   oMySQLConnection.query(query, (err, rows, fields) => {
@@ -25,6 +26,20 @@ const getUsuarioById = (req, res) => {
     }
   });
 };
+const getLogin = (req, res) => {
+  const { oUser, oPass } = req.body;
+  const query = "CALL LoginSP(?,?);";
+
+  oMySQLConnection.query(query, [oUser, oPass], (err, rows, fields) => {
+    if (!err) {
+      res.json(rows);
+    } else {
+      console.log(err);
+    }
+  });
+};
+
+//CREATES
 const insertUsuario = (req, res) => {
   const { oNombre, oApellido, oCorreo, oPass, oTelefono, oRolId } = req.body;
 
@@ -43,6 +58,7 @@ const insertUsuario = (req, res) => {
   );
 };
 
+//UPDATES
 const updateUsuario = (req, res) => {
   const { oUsuarioId, oNombre, oApellido, oCorreo,  oTelefono, oRolId } =
     req.body;
@@ -75,6 +91,7 @@ const updatePass = (req, res) => {
   });
 };
 
+//DELETES
 const deleteUsuario = (req, res) => {
   const { oUsuarioId } = req.body;
 
@@ -89,19 +106,7 @@ const deleteUsuario = (req, res) => {
   });
 };
 
-const getLogin = (req, res) => {
-  const { oUser, oPass } = req.body;
-  const query = "CALL LoginSP(?,?);";
-
-  oMySQLConnection.query(query, [oUser, oPass], (err, rows, fields) => {
-    if (!err) {
-      res.json(rows);
-    } else {
-      console.log(err);
-    }
-  });
-};
-
+//EXPORTS
 module.exports = {
   getUsuarios,
   getUsuarioById,

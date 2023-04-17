@@ -1,6 +1,6 @@
 const oMySQLConnection = require('../database');
 
-
+// GETS
 const getResultadosParametrosByResultadoId = (req, res) => {
     const oResultadoId = req.params["resultId"];
 
@@ -41,6 +41,24 @@ const getResultadosParametrosByFecha = (req, res) => {
     });
   }
 
+  //CREATES
+
+  const createResultadoParametro = (req, res) => {
+    const {oParametroId, oResultadoId, oValor} = req.body;
+
+    const query = 'CALL insertResultParameter(?, ?, ?);';
+
+    oMySQLConnection.query(query, [oParametroId, oResultadoId, oValor], (err, rows) => {
+        if (!err) {
+            res.status(200).send("The value was created successfully.");
+        } else {
+            res.status(400).send("One of the parameters introduced is wrong.");
+        }
+    });
+  }
+
+
+  //UPDATES
 const updateResultadoParametro = (req, res) => {
     const { oParametroId, oResultadoId, oValor } = req.body;
 
@@ -54,6 +72,7 @@ const updateResultadoParametro = (req, res) => {
     });
 }
 
+//DELETES
 const deleteResultadoParametro = (req, res) => {
     const { oParametroId, oResultadoId } = req.body;
 
@@ -67,10 +86,12 @@ const deleteResultadoParametro = (req, res) => {
     })
 }
 
+//EXPORTS
 module.exports = {
     getResultadosParametrosByResultadoId,
     getResultadosParametrosByParameterId,
     getResultadosParametrosByFecha,
+    createResultadoParametro,
     updateResultadoParametro,
     deleteResultadoParametro
 };

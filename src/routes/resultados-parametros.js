@@ -9,6 +9,9 @@ router.get("/all/:resultId", resultadosParametrosController.getResultadosParamet
 //GET   /resultados-parametros/:parameterId
 router.get("/:parameterId", resultadosParametrosController.getResultadosParametrosByParameterId);
 
+//POST /resultados-parametros
+router.post("/", resultadosParametrosController.createResultadoParametro);
+
 //POST  /resultados-parametros/date
 router.post("/date", resultadosParametrosController.getResultadosParametrosByFecha);
 
