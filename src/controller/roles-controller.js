@@ -1,5 +1,6 @@
 const oMySQLConnection = require("../database");
 
+//GETS
 const getRoles = (req, res) => {
   const query = "CALL GetRolSP();";
   oMySQLConnection.query(query, (err, rows, fields) => {
@@ -23,6 +24,7 @@ const getRolesById = (req, res) => {
   });
 };
 
+//EXPORTS
 module.exports = {
   getRoles,
   getRolesById,

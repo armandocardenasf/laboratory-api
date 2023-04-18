@@ -1,5 +1,6 @@
 const oMySQLConnection = require("../database");
 
+//GETS
 const getCliente = (req, res) => {
   const query = "CALL GetClientesSP();";
   oMySQLConnection.query(query, (err, rows, fields) => {
@@ -38,6 +39,8 @@ const getClienteByExternoId = (req, res) => {
     }
   });
 };
+
+//CREATES
 const insertCliente = (req, res) => {
   const { oNombre, oDireccion, oRfc, oExternoId, oSuscripcionId } = req.body;
 
@@ -56,6 +59,7 @@ const insertCliente = (req, res) => {
   );
 };
 
+//UPDATES
 const updateCliente = (req, res) => {
   const { oClienteId, oNombre, oDireccion, oRfc, oExternoId, oSuscripcionId } =
     req.body;
@@ -75,6 +79,7 @@ const updateCliente = (req, res) => {
   );
 };
 
+//DELETES
 const deleteCliente = (req, res) => {
   const { oClienteId } = req.body;
 
@@ -89,6 +94,7 @@ const deleteCliente = (req, res) => {
   });
 };
 
+//EXPORTS
 module.exports = {
   getCliente,
   getClienteById,

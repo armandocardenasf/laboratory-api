@@ -1,5 +1,6 @@
 const oMySQLConnection = require("../database");
 
+//GETS
 const getLogs = (req, res) => {
   const { oUser, oPass } = req.body;
 
@@ -14,6 +15,7 @@ const getLogs = (req, res) => {
   });
 };
 
+//CREATES
 const insertLogs = (req, res) => {
   const { oFecha, oAccion, oUsuarioId } = req.body;
 
@@ -32,6 +34,7 @@ const insertLogs = (req, res) => {
   );
 };
 
+//EXPORTS
 module.exports = {
   getLogs,
   insertLogs,

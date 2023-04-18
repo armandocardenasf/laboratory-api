@@ -1,5 +1,6 @@
 const oMySQLConnection = require("../database");
 
+//GETS
 const getResultados = (req, res) => {
   const query = "CALL GetResultadosSP();";
   oMySQLConnection.query(query, (err, rows, fields) => {
@@ -35,10 +36,11 @@ const getAllResultadosByClienteId = (req, res) => {
       res.json(rows);
     } else {
       res.status(400).send("Bad request.");
-    }
+      }
   });
 };
 
+//CREATES
 const insertResultado = (req, res) => {
   const {
     oMuestra,
@@ -76,6 +78,8 @@ const insertResultado = (req, res) => {
     }
   );
 };
+
+//UPDATES
 const updateResultado = (req, res) => {
   const {
     oResultadoId,
@@ -115,6 +119,8 @@ const updateResultado = (req, res) => {
     }
   );
 };
+
+//DELETES
 const deleteResultado = (req, res) => {
   const { oResultadoId } = req.body;
 
@@ -128,6 +134,8 @@ const deleteResultado = (req, res) => {
     }
   });
 };
+
+//EXPORTS
 module.exports = {
   getResultados,
   getResultadoByClienteId,
