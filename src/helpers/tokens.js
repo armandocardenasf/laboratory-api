@@ -11,3 +11,7 @@ const generateToken = (name, type) => {
 
   return jwt.sign(data, TOKEN_SECRET, { expiresIn: "14d" });
 };
+
+module.exports = {
+  generateToken,
+};
