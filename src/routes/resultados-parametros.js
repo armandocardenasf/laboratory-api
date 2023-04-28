@@ -25,6 +25,7 @@ router.post(
 
 //PUT   /resultados-parametros
 router.put("/", resultadosParametrosController.updateResultadoParametro);
+
 //PUT /resultados-parametros/byID
 router.put(
   "/byID",

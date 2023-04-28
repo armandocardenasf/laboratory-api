@@ -19,7 +19,7 @@ app.use(express.json());
 app.use(cors({ credentials: false, origin: "*" }));
 
 app.get("/", (req, res) => {
-  res.send("hello world");
+  res.status(200).send("Hello World!");
 });
 
 app.use("/cliente", clienteRouter);
