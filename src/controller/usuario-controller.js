@@ -1,4 +1,5 @@
 const oMySQLConnection = require("../database");
+const { generateToken } = require("../helpers/tokens");
 
 //GETS
 const getUsuarios = (req, res) => {
@@ -26,10 +27,12 @@ const getUsuarioById = (req, res) => {
     }
   });
 };
+
+// LOGIN OF USER.
 const getLogin = (req, res) => {
   const { oUser, oPass } = req.body;
-  const query = "CALL LoginSP(?,?);";
 
+  query = "CALL LoginSP(?,?);";
   oMySQLConnection.query(query, [oUser, oPass], (err, rows, fields) => {
     if (!err) {
       res.json(rows);
@@ -37,6 +40,32 @@ const getLogin = (req, res) => {
       console.log(err);
     }
   });
+};
+
+// GET ACCESS TOKENS.
+const getAccessTokens = (req, res) => {
+  const { oUser, oPass } = req.body;
+
+  let query = "SELECT roles_id FROM usuario WHERE usuario = ? AND pass = ?;";
+
+  let typeUser = "CLIENTE";
+  oMySQLConnection.query(query, [oUser, oPass], (err, rows, fields) => {
+    if (!err) {
+      typeUser = rows[0].roles_id;
+    } else {
+      res.state(500).json();
+    }
+  });
+
+  const token = generateToken(oUser, typeUser);
+  const refreshToken = generateRefreshToken(oUser, typeUser);
+
+  const data = {
+    token: token,
+    refreshToken: refreshToken,
+  };
+
+  res.json(data);
 };
 
 //CREATES
@@ -60,14 +89,14 @@ const insertUsuario = (req, res) => {
 
 //UPDATES
 const updateUsuario = (req, res) => {
-  const { oUsuarioId, oNombre, oApellido, oCorreo,  oTelefono, oRolId } =
+  const { oUsuarioId, oNombre, oApellido, oCorreo, oTelefono, oRolId } =
     req.body;
 
   const query = "CALL UpdateUsuarioSP(?,?,?,?,?,?);";
 
   oMySQLConnection.query(
     query,
-    [oUsuarioId, oNombre, oApellido, oCorreo,  oTelefono, oRolId],
+    [oUsuarioId, oNombre, oApellido, oCorreo, oTelefono, oRolId],
     (err, rows, fields) => {
       if (!err) {
         res.json(rows);
@@ -114,5 +143,6 @@ module.exports = {
   updateUsuario,
   updatePass,
   deleteUsuario,
+  getAccessTokens,
   getLogin,
 };

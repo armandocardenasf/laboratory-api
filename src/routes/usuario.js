@@ -23,4 +23,7 @@ router.put("/delete", oUsuarioController.deleteUsuario);
 //GET   /usuario/login
 router.post("/login", oUsuarioController.getLogin);
 
+//GET   /usuario/tokens
+router.post("/tokens", oUsuarioController.getAccessTokens);
+
 module.exports = router;
