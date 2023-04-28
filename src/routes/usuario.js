@@ -1,6 +1,7 @@
 const express = require("express");
 const oUsuarioController = require("../controller/usuario-controller");
 const router = express.Router();
+const auth = require("../helpers/auth");
 
 //GET   /usuario
 router.get("/", oUsuarioController.getUsuarios);
@@ -20,10 +21,24 @@ router.put("/pass", oUsuarioController.updatePass);
 //PUT   /usuario/delete
 router.put("/delete", oUsuarioController.deleteUsuario);
 
-//GET   /usuario/login
+//POST   /usuario/login
 router.post("/login", oUsuarioController.getLogin);
 
-//GET   /usuario/tokens
+//POST   /usuario/tokens
 router.post("/tokens", oUsuarioController.getAccessTokens);
+
+//GET    /usuario/secured/admin
+router.get(
+  "/secured/admin",
+  auth.adminAuth,
+  oUsuarioController.securedRouteAdmin
+);
+
+//GET    /usuario/secured/client
+router.get(
+  "/secured/client",
+  auth.clientAuth,
+  oUsuarioController.securedRouteClient
+);
 
 module.exports = router;

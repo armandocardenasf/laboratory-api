@@ -1,5 +1,5 @@
 const oMySQLConnection = require("../database");
-const { generateToken } = require("../helpers/tokens");
+const { generateToken, generateRefreshToken } = require("../helpers/tokens");
 
 //GETS
 const getUsuarios = (req, res) => {
@@ -42,20 +42,55 @@ const getLogin = (req, res) => {
   });
 };
 
+// helper function for getAcessTokens.
+const getIdTypeUser = (oUser, oPass) => {
+  let query = "SELECT roles_id FROM usuario WHERE correo = ? AND password = ?;";
+
+  return new Promise((resolve, reject) => {
+    oMySQLConnection.query(query, [oUser, oPass], (err, rows, fields) => {
+      if (!err) {
+        resolve(rows[0].roles_id);
+      } else {
+        reject(err);
+      }
+    });
+  });
+};
+
+// helper function for getAcessTokens.
+const getTypeUser = (idTypeUser) => {
+  // get the type of user the token is gonna be signed with to identify the permissions of user.
+  query = "SELECT nombre FROM cevitdb.roles WHERE id = ?;";
+
+  return new Promise((resolve, reject) => {
+    oMySQLConnection.query(query, [idTypeUser], (err, rows) => {
+      if (!err) {
+        resolve(rows[0].nombre);
+      } else {
+        reject(err);
+      }
+    });
+  });
+};
+
 // GET ACCESS TOKENS.
-const getAccessTokens = (req, res) => {
+const getAccessTokens = async (req, res) => {
+  /*
+  Function which purpose is to get the corresponding JWT and refresh token for the user. The JWT token consists of
+  2 different components, which are the email and the type of the user.
+  */
   const { oUser, oPass } = req.body;
 
-  let query = "SELECT roles_id FROM usuario WHERE usuario = ? AND pass = ?;";
+  let idTypeUser = 0;
+  let typeUser = "";
 
-  let typeUser = "CLIENTE";
-  oMySQLConnection.query(query, [oUser, oPass], (err, rows, fields) => {
-    if (!err) {
-      typeUser = rows[0].roles_id;
-    } else {
-      res.state(500).json();
-    }
-  });
+  idTypeUser = await getIdTypeUser(oUser, oPass);
+  typeUser = await getTypeUser(idTypeUser);
+
+  if (!typeUser) {
+    res.status(500).send();
+    return;
+  }
 
   const token = generateToken(oUser, typeUser);
   const refreshToken = generateRefreshToken(oUser, typeUser);
@@ -66,6 +101,16 @@ const getAccessTokens = (req, res) => {
   };
 
   res.json(data);
+};
+
+// TESTING ROUTE
+const securedRouteAdmin = (req, res) => {
+  res.status(200).send();
+};
+
+// TESTING ROUTE
+const securedRouteClient = (req, res) => {
+  res.status(200).send();
 };
 
 //CREATES
@@ -145,4 +190,6 @@ module.exports = {
   deleteUsuario,
   getAccessTokens,
   getLogin,
+  securedRouteAdmin,
+  securedRouteClient,
 };

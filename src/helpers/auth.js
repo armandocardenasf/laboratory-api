@@ -7,27 +7,27 @@ const adminAuth = (req, res, next) => {
   const authHeader = req.header("authorization");
   const token = authHeader && authHeader.split(" ")[1];
 
-  if (token === null) res.status(400).send();
+  if (!token) res.status(400).send();
 
   jwt.verify(token, TOKEN_SECRET, (err, data) => {
-    const isAdmin = data.type === "admin" ? true : false;
+    const isAdmin = data.type === "ADMINISTRADOR" ? true : false;
 
     if (err || !isAdmin) {
-      res.send(403).send();
+      res.status(403).send();
     } else {
       next();
     }
   });
 };
 
-const userAuth = (req, res, next) => {
+const clientAuth = (req, res, next) => {
   const authHeader = req.header("authorization");
   const token = authHeader && authHeader.split(" ")[1];
 
   if (token === null) res.status(400).send();
 
   jwt.verify(token, TOKEN_SECRET, (err, data) => {
-    const isClient = data.type === "client" ? true : false;
+    const isClient = data.type === "CLIENTE" ? true : false;
 
     if (err || !isClient) {
       res.send(403).send();
@@ -37,7 +37,7 @@ const userAuth = (req, res, next) => {
   });
 };
 
-modele.exports = {
+module.exports = {
   adminAuth,
-  userAuth,
+  clientAuth,
 };
