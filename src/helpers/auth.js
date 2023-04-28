@@ -24,7 +24,7 @@ const clientAuth = (req, res, next) => {
   const authHeader = req.header("authorization");
   const token = authHeader && authHeader.split(" ")[1];
 
-  if (token === null) res.status(400).send();
+  if (!token) res.status(400).send();
 
   jwt.verify(token, TOKEN_SECRET, (err, data) => {
     const isClient = data.type === "CLIENTE" ? true : false;
@@ -37,7 +37,44 @@ const clientAuth = (req, res, next) => {
   });
 };
 
+const userAuth = (req, res, next) => {
+  const authHeader = req.header("authorization");
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (!token) res.status(400).send();
+
+  jwt.verify(token, TOKEN_SECRET, (err, data) => {
+    const isUser = data.type === "USUARIO" ? true : false;
+
+    if (err || !isUser) {
+      res.send(403).send();
+    } else {
+      next();
+    }
+  });
+};
+
+const authUserAndClient = (req, res, next) => {
+  const authHeader = req.header("authorization");
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (!token) res.status(400).send();
+
+  jwt.verify(token, TOKEN_SECRET, (err, data) => {
+    const isUserOrClient =
+      data.type === "CLIENTE" || data.type === "USUARIO" ? true : false;
+
+    if (err || !isUserOrClient) {
+      res.send(403).send();
+    } else {
+      next();
+    }
+  });
+};
+
 module.exports = {
   adminAuth,
   clientAuth,
+  userAuth,
+  authUserAndClient,
 };
