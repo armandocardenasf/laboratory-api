@@ -10,7 +10,7 @@ const rolesRouter = require("./routes/roles");
 const suscripcionesRouter = require("./routes/suscripciones");
 const usuarioRouter = require("./routes/usuario");
 const filesRouter = require("./routes/files");
-
+const recepcion = require("./routes/recepcion");
 const app = express();
 
 const PORT = 80;
@@ -32,6 +32,7 @@ app.use("/roles", rolesRouter);
 app.use("/suscripciones", suscripcionesRouter);
 app.use("/usuario", usuarioRouter);
 app.use("/files", filesRouter);
+app.use("/recepcion", recepcion);
 
 app.listen(PORT, () => {
   console.log(`SERVER IS RUNNING IN ${PORT}`);
