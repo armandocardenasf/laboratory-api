@@ -2,8 +2,9 @@ const oMySQLConnection = require("../database");
 
 //GETS
 const getResultados = (req, res) => {
-  const query = "CALL GetResultadosSP();";
-  oMySQLConnection.query(query, (err, rows, fields) => {
+  const { oFolio } = req.body;
+  const query = "CALL GetResultadosByFolio(?);";
+  oMySQLConnection.query(query, [oFolio], (err, rows, fields) => {
     if (!err) {
       console.log(rows);
       res.json(rows);
@@ -36,7 +37,7 @@ const getAllResultadosByClienteId = (req, res) => {
       res.json(rows);
     } else {
       res.status(400).send("Bad request.");
-      }
+    }
   });
 };
 

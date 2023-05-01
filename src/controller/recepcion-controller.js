@@ -13,6 +13,19 @@ const getRecepcion = (req, res) => {
     }
   });
 };
+const getRecepcionByCliente = (req, res) => {
+  const { oClienteID } = req.body;
+  const query = "CALL GetRecepcionByClienteIdSP(?);";
+  oMySQLConnection.query(query, [oClienteID], (err, rows, fields) => {
+    if (!err) {
+      console.log(rows);
+      res.json(rows);
+    } else {
+      console.log(err);
+      return err;
+    }
+  });
+};
 const insertRecepcion = (req, res) => {
   const {
     oFechaMuestreo,
@@ -20,13 +33,21 @@ const insertRecepcion = (req, res) => {
     oFolio,
     oTotalMuestras,
     oClienteID,
+    oTipoMuestra,
   } = req.body;
 
-  const query = "CALL InsertRecepcionSP(?,?,?,?,?);";
+  const query = "CALL InsertRecepcionSP(?,?,?,?,?,?);";
 
   oMySQLConnection.query(
     query,
-    [oFechaMuestreo, oFechaRecepcion, oFolio, oTotalMuestras, oClienteID],
+    [
+      oFechaMuestreo,
+      oFechaRecepcion,
+      oFolio,
+      oTotalMuestras,
+      oClienteID,
+      oTipoMuestra,
+    ],
     (err, rows, fields) => {
       if (!err) {
         res.json(rows);
@@ -76,6 +97,7 @@ const deleteRecepcion = (req, res) => {
 //EXPORTS
 module.exports = {
   getRecepcion,
+  getRecepcionByCliente,
   insertRecepcion,
   deleteRecepcion,
   updateRecepcion,

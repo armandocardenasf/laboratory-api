@@ -3,7 +3,7 @@ const resultadosController = require("../controller/resultados-controller");
 const router = express.Router();
 
 //GET   /resultados
-router.get("/", resultadosController.getResultados);
+router.post("/", resultadosController.getResultados);
 
 //GET   /resultados/all/:clientId
 router.get("/all/:clientId", resultadosController.getAllResultadosByClienteId);

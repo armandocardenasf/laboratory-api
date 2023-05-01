@@ -6,6 +6,8 @@ router.get("/", oRecepcionController.getRecepcion);
 
 router.post("/", oRecepcionController.insertRecepcion);
 
+router.post("/byCliente", oRecepcionController.getRecepcionByCliente);
+
 router.put("/", oRecepcionController.updateRecepcion);
 
 router.put("/delete", oRecepcionController.deleteRecepcion);

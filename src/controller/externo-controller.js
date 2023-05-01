@@ -43,9 +43,6 @@ const getExternoByUserId = (req, res) => {
 //CREATES
 const insertExterno = (req, res) => {
   const {
-    oNoFolio,
-    oFechaMuestreo,
-    oFechaRecepcion,
     oRazonSocial,
     oRfc,
     oTelefono,
@@ -54,14 +51,11 @@ const insertExterno = (req, res) => {
     oUsuarioId,
   } = req.body;
 
-  const query = "CALL InsertExternoSP(?,?,?,?,?,?,?,?,?);";
+  const query = "CALL InsertExternoSP(?,?,?,?,?,?);";
 
   oMySQLConnection.query(
     query,
     [
-      oNoFolio,
-      oFechaMuestreo,
-      oFechaRecepcion,
       oRazonSocial,
       oRfc,
       oTelefono,
