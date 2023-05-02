@@ -47,22 +47,43 @@ router.post("/insertFile", upload.single("csvFile"), async (req, res) => {
 
   try {
     for (const analysis of results) {
-      // see if result is already in db.
-      const count = await countResults(analysis["FOLIO"]);
-
-      let resultId;
-      if (count > 0) {
-        resultId = await getResultId(analysis["FOLIO"], userId);
-      } else {
-        resultId = await insertResult(analysis, userId);
-      }
+      resultId = await insertResult(analysis, userId);
 
       if (!resultId) {
         continue;
       }
 
       for (const [parameter, idParameter] of Object.entries(idParameters)) {
-        await insertResultParameter(idParameter, resultId, analysis[parameter]);
+        let [query, resultParameter] = ["", ""];
+
+        // check if relevant parameters to append to the result.
+        switch (parameter) {
+          case "Fecha Analisis":
+            query = "UPDATE resultados SET fecha_analisis = ? WHERE id = ?;";
+            resultParameter = analysis[parameter];
+            break;
+          case "Hora Analisis":
+            query = "UPDATE resultados SET fecha_informe = ? WHERE id = ?;";
+            resultParameter = analysis[parameter];
+            break;
+          case "Fecha Informe":
+            query = "UPDATE resultados SET hora_analisis = ? WHERE id = ?;";
+            resultParameter = analysis[parameter];
+            break;
+        }
+
+        // if: is part of the result data.
+        if (query) {
+          const [rows, fields] = await oMySQLConnection
+            .promise()
+            .query(query, [resultParameter, resultId]);
+        } else {
+          await insertResultParameter(
+            idParameter,
+            resultId,
+            analysis[parameter]
+          );
+        }
       }
     }
   } catch (e) {
