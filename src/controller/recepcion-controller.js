@@ -65,13 +65,22 @@ const updateRecepcion = (req, res) => {
     oFolio,
     oTotalMuestras,
     oClienteID,
+    oTipoMuestra,
   } = req.body;
 
-  const query = "CALL UpdateRecepcionSP(?,?,?,?,?,?);";
+  const query = "CALL UpdateRecepcionSP(?,?,?,?,?,?,?);";
 
   oMySQLConnection.query(
     query,
-    [oID, oFechaMuestreo, oFechaRecepcion, oFolio, oTotalMuestras, oClienteID],
+    [
+      oID,
+      oFechaMuestreo,
+      oFechaRecepcion,
+      oFolio,
+      oTotalMuestras,
+      oClienteID,
+      oTipoMuestra,
+    ],
     (err, rows, fields) => {
       if (!err) {
         res.json(rows);
