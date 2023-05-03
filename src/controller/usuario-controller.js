@@ -71,8 +71,15 @@ const getNewTokenWithRefreshToken = async (req, res) => {
     return;
   }
 
+  // check if refresh token is not expired.
+  const decoded = jwt.verify(oRefreshToken, REFRESH_TOKEN_SECRET);
+  if (decoded.exp * 1000 < Date.now()) {
+    res.status(403).send();
+    return;
+  }
+
   // check if user exists.
-  let query = "SELECT COUNT(*) AS count FROM usuario WHERE correo = ?;";
+  let query = "SELECT COUNT(*) as count FROM usuario WHERE correo = ?;";
   const [rows, fields] = await oMySQLConnection
     .promise()
     .query(query, [userTokenData.email]);
@@ -88,18 +95,18 @@ const getNewTokenWithRefreshToken = async (req, res) => {
 };
 
 // helper function for getAcessTokens.
-const getIdTypeUser = (oUser, oPass) => {
+const getIdTypeUser = async (oUser, oPass) => {
   let query = "SELECT roles_id FROM usuario WHERE correo = ? AND password = ?;";
 
   // TODO: hash password and modify the function.
-  const [rows, fields] = oMySQLConnection
+  const [rows, fields] = await oMySQLConnection
     .promise()
     .query(query, [oUser, oPass]);
 
   if (rows[0].roles_id) {
     return rows[0].roles_id;
   } else {
-    return new Error("Type of user not found.");
+    throw new Error("Could not get the user.");
   }
 };
 
@@ -115,7 +122,7 @@ const getTypeUser = async (idTypeUser) => {
   if (rows[0].nombre) {
     return rows[0].nombre;
   } else {
-    return new Error("Could not get the type of the user.");
+    throw new Error("Could not get the type of the user.");
   }
 };
 
@@ -132,9 +139,7 @@ const getAccessTokens = async (req, res) => {
 
   try {
     idTypeUser = await getIdTypeUser(oUser, oPass);
-    console.log(idTypeUser);
     typeUser = await getTypeUser(idTypeUser);
-    console.log("hereee");
   } catch (e) {
     res.status(500).send();
   }
@@ -154,7 +159,7 @@ const getAccessTokens = async (req, res) => {
 
   // PUT refresh token and expiration date NOW in db.
   const query = "CALL UpdateRefreshTokenSP(?, ?);";
-  await oMySQLConnection.query(query, [refreshToken, oUser]);
+  await oMySQLConnection.promise().query(query, [refreshToken, oUser]);
 
   res.json(data);
 };
