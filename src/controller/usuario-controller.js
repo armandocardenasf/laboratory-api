@@ -1,5 +1,10 @@
 const oMySQLConnection = require("../database");
-const { generateToken, generateRefreshToken } = require("../helpers/tokens");
+const {
+  generateToken,
+  generateRefreshToken,
+  REFRESH_TOKEN_SECRET,
+} = require("../helpers/tokens");
+const jwt = require("jsonwebtoken");
 
 //GETS
 const getUsuarios = (req, res) => {
@@ -32,6 +37,8 @@ const getUsuarioById = (req, res) => {
 const getLogin = (req, res) => {
   const { oUser, oPass } = req.body;
 
+  // TODO: hash password and modify the function.
+
   query = "CALL LoginSP(?,?);";
   oMySQLConnection.query(query, [oUser, oPass], (err, rows, fields) => {
     if (!err) {
@@ -42,35 +49,81 @@ const getLogin = (req, res) => {
   });
 };
 
-// helper function for getAcessTokens.
-const getIdTypeUser = (oUser, oPass) => {
-  let query = "SELECT roles_id FROM usuario WHERE correo = ? AND password = ?;";
+const getNewTokenWithRefreshToken = async (req, res) => {
+  const { oRefreshToken } = req.body;
 
-  return new Promise((resolve, reject) => {
-    oMySQLConnection.query(query, [oUser, oPass], (err, rows, fields) => {
-      if (!err) {
-        resolve(rows[0].roles_id);
-      } else {
-        reject(err);
+  // get user data from token
+  let userTokenData = Object();
+  try {
+    jwt.verify(oRefreshToken, REFRESH_TOKEN_SECRET, (err, data) => {
+      if (err) {
+        res.status(400).send();
+        return;
       }
+
+      userTokenData = {
+        email: data.email,
+        type: data.type,
+      };
     });
-  });
+  } catch (e) {
+    res.status(403).send();
+    return;
+  }
+
+  // check if refresh token is not expired.
+  const decoded = jwt.verify(oRefreshToken, REFRESH_TOKEN_SECRET);
+  if (decoded.exp * 1000 < Date.now()) {
+    res.status(403).send();
+    return;
+  }
+
+  // check if user exists.
+  let query = "SELECT COUNT(*) as count FROM usuario WHERE correo = ?;";
+  const [rows, fields] = await oMySQLConnection
+    .promise()
+    .query(query, [userTokenData.email]);
+
+  if (rows[0].count == 0) {
+    res.status(403).send();
+    return;
+  }
+
+  // user exists. Get new token.
+  const token = generateToken(userTokenData.email, userTokenData.type);
+  res.status(200).json({ token: token });
 };
 
 // helper function for getAcessTokens.
-const getTypeUser = (idTypeUser) => {
-  // get the type of user the token is gonna be signed with to identify the permissions of user.
-  query = "SELECT nombre FROM cevitdb.roles WHERE id = ?;";
+const getIdTypeUser = async (oUser, oPass) => {
+  let query = "SELECT roles_id FROM usuario WHERE correo = ? AND password = ?;";
 
-  return new Promise((resolve, reject) => {
-    oMySQLConnection.query(query, [idTypeUser], (err, rows) => {
-      if (!err) {
-        resolve(rows[0].nombre);
-      } else {
-        reject(err);
-      }
-    });
-  });
+  // TODO: hash password and modify the function.
+  const [rows, fields] = await oMySQLConnection
+    .promise()
+    .query(query, [oUser, oPass]);
+
+  if (rows[0].roles_id) {
+    return rows[0].roles_id;
+  } else {
+    throw new Error("Could not get the user.");
+  }
+};
+
+// helper function for getAcessTokens.
+const getTypeUser = async (idTypeUser) => {
+  // get the type of user the token is gonna be signed with to identify the permissions of user.
+  query = "SELECT nombre FROM roles WHERE id = ?;";
+
+  const [rows, fields] = await oMySQLConnection
+    .promise()
+    .query(query, [idTypeUser]);
+
+  if (rows[0].nombre) {
+    return rows[0].nombre;
+  } else {
+    throw new Error("Could not get the type of the user.");
+  }
 };
 
 // GET ACCESS TOKENS.
@@ -84,8 +137,12 @@ const getAccessTokens = async (req, res) => {
   let idTypeUser = 0;
   let typeUser = "";
 
-  idTypeUser = await getIdTypeUser(oUser, oPass);
-  typeUser = await getTypeUser(idTypeUser);
+  try {
+    idTypeUser = await getIdTypeUser(oUser, oPass);
+    typeUser = await getTypeUser(idTypeUser);
+  } catch (e) {
+    res.status(500).send();
+  }
 
   if (!typeUser) {
     res.status(500).send();
@@ -99,6 +156,10 @@ const getAccessTokens = async (req, res) => {
     token: token,
     refreshToken: refreshToken,
   };
+
+  // PUT refresh token and expiration date NOW in db.
+  const query = "CALL UpdateRefreshTokenSP(?, ?);";
+  await oMySQLConnection.promise().query(query, [refreshToken, oUser]);
 
   res.json(data);
 };
@@ -190,6 +251,7 @@ module.exports = {
   deleteUsuario,
   getAccessTokens,
   getLogin,
+  getNewTokenWithRefreshToken,
   securedRouteAdmin,
   securedRouteClient,
 };

@@ -27,8 +27,8 @@ router.post("/login", oUsuarioController.getLogin);
 //POST   /usuario/tokens
 router.post("/tokens", oUsuarioController.getAccessTokens);
 
-//GET    /usuario/secured/admin
-router.get(
+//POST    /usuario/secured/admin
+router.post(
   "/secured/admin",
   auth.adminAuth,
   oUsuarioController.securedRouteAdmin
@@ -40,5 +40,8 @@ router.get(
   auth.clientAuth,
   oUsuarioController.securedRouteClient
 );
+
+//POST    /usuario/token/refresh
+router.post("/token/refresh", oUsuarioController.getNewTokenWithRefreshToken);
 
 module.exports = router;
