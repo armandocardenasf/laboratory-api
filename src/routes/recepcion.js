@@ -1,15 +1,20 @@
 const express = require("express");
 const router = express.Router();
 const oRecepcionController = require("../controller/recepcion-controller");
+const { adminAuth } = require("../helpers/auth");
 
-router.get("/", oRecepcionController.getRecepcion);
+router.get("/", adminAuth, oRecepcionController.getRecepcion);
 
-router.post("/", oRecepcionController.insertRecepcion);
+router.post("/", adminAuth, oRecepcionController.insertRecepcion);
 
-router.post("/byCliente", oRecepcionController.getRecepcionByCliente);
+router.post(
+  "/byCliente",
+  adminAuth,
+  oRecepcionController.getRecepcionByCliente
+);
 
-router.put("/", oRecepcionController.updateRecepcion);
+router.put("/", adminAuth, oRecepcionController.updateRecepcion);
 
-router.put("/delete", oRecepcionController.deleteRecepcion);
+router.put("/delete", adminAuth, oRecepcionController.deleteRecepcion);
 
 module.exports = router;

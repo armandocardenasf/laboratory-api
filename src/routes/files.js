@@ -5,6 +5,7 @@ const csv = require("csv-parser");
 const multer = require("multer");
 const fs = require("fs");
 const oMySQLConnection = require("../database");
+const { adminAuth } = require("../helpers/auth");
 
 // defining a middleware to only accept csv files.
 const upload = multer({
@@ -22,78 +23,83 @@ const upload = multer({
 });
 
 // POST     files/insertFile
-router.post("/insertFile", upload.single("csvFile"), async (req, res) => {
-  const { userId } = req.body;
+router.post(
+  "/insertFile",
+  adminAuth,
+  upload.single("csvFile"),
+  async (req, res) => {
+    const { userId } = req.body;
 
-  if (!req.file || !req.file.buffer) {
-    return res.status(400).json({ error: "No file uploaded" });
-  }
-
-  const csvData = req.file.buffer.toString();
-
-  let header = null;
-  const results = [];
-  csv()
-    .on("headers", (headers) => {
-      header = headers;
-    })
-    .on("data", (data) => results.push(data))
-    .on("end", () => {
-      console.log("Data successfully uploaded.");
-    })
-    .write(csvData);
-
-  const idParameters = await getParametersId(header);
-
-  try {
-    for (const analysis of results) {
-      resultId = await insertResult(analysis, userId);
-
-      if (!resultId) {
-        continue;
-      }
-
-      for (const [parameter, idParameter] of Object.entries(idParameters)) {
-        let [query, resultParameter] = ["", ""];
-
-        // check if relevant parameters to append to the result.
-        switch (parameter) {
-          case "Fecha Analisis":
-            query = "UPDATE resultados SET fecha_analisis = ? WHERE id = ?;";
-            resultParameter = analysis[parameter];
-            break;
-          case "Hora Analisis":
-            query = "UPDATE resultados SET fecha_informe = ? WHERE id = ?;";
-            resultParameter = analysis[parameter];
-            break;
-          case "Fecha Informe":
-            query = "UPDATE resultados SET hora_analisis = ? WHERE id = ?;";
-            resultParameter = analysis[parameter];
-            break;
-        }
-
-        // if: is part of the result data.
-        if (query) {
-          const [rows, fields] = await oMySQLConnection
-            .promise()
-            .query(query, [resultParameter, resultId]);
-        } else {
-          await insertResultParameter(
-            idParameter,
-            resultId,
-            analysis[parameter]
-          );
-        }
-      }
+    if (!req.file || !req.file.buffer) {
+      return res.status(400).json({ error: "No file uploaded" });
     }
-  } catch (e) {
-    console.log(e);
-    res.status(500).send("Something went wrong.");
-    return;
-  }
 
-  res.status(200).send("Data insertion completed successfully.");
-});
+    const csvData = req.file.buffer.toString();
+
+    let header = null;
+    const results = [];
+    csv()
+      .on("headers", (headers) => {
+        header = headers;
+      })
+      .on("data", (data) => results.push(data))
+      .on("end", () => {
+        console.log("Data successfully uploaded.");
+      })
+      .write(csvData);
+
+    const idParameters = await getParametersId(header);
+
+    try {
+      for (const analysis of results) {
+        resultId = await insertResult(analysis, userId);
+
+        if (!resultId) {
+          continue;
+        }
+
+        for (const [parameter, idParameter] of Object.entries(idParameters)) {
+          let [query, resultParameter] = ["", ""];
+
+          // check if relevant parameters to append to the result.
+          switch (parameter) {
+            case "Fecha Analisis":
+              query = "UPDATE resultados SET fecha_analisis = ? WHERE id = ?;";
+              resultParameter = analysis[parameter];
+              break;
+            case "Hora Analisis":
+              query = "UPDATE resultados SET fecha_informe = ? WHERE id = ?;";
+              resultParameter = analysis[parameter];
+              break;
+            case "Fecha Informe":
+              query = "UPDATE resultados SET hora_analisis = ? WHERE id = ?;";
+              resultParameter = analysis[parameter];
+              break;
+          }
+
+          // if: is part of the result data.
+          if (query) {
+            const [rows, fields] = await oMySQLConnection
+              .promise()
+              .query(query, [resultParameter, resultId]);
+          } else {
+            await insertResultParameter(
+              idParameter,
+              resultId,
+              analysis[parameter]
+            );
+          }
+        }
+      }
+    } catch (e) {
+      console.log(e);
+      res.status(500).send("Something went wrong.");
+      return;
+    }
+
+    res.status(200).send("Data insertion completed successfully.");
+  }
+);
 
 const countResults = async (muestra) => {
   const query =
