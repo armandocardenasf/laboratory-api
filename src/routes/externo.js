@@ -1,23 +1,24 @@
 const express = require("express");
 const externoParametro = require("../controller/externo-controller");
+const { adminAuth } = require("../helpers/auth");
 const router = express.Router();
 
 //GET   /externo
-router.get("/", externoParametro.getExterno);
+router.get("/", adminAuth, externoParametro.getExterno);
 
 //POST   /externo/byid
-router.post("/byid", externoParametro.getExternoById);
+router.post("/byid", adminAuth, externoParametro.getExternoById);
 
 //POST   /externo/byUserid
-router.post("/byUserid", externoParametro.getExternoByUserId);
+router.post("/byUserid", adminAuth, externoParametro.getExternoByUserId);
 
 //POST  /externo
-router.post("/", externoParametro.insertExterno);
+router.post("/", adminAuth, externoParametro.insertExterno);
 
 //PUT   /externo
-router.put("/", externoParametro.updateExterno);
+router.put("/", adminAuth, externoParametro.updateExterno);
 
 //PUT   /externo/delete
-router.put("/delete", externoParametro.deleteExterno);
+router.put("/delete", adminAuth, externoParametro.deleteExterno);
 
 module.exports = router;

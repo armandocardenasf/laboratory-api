@@ -1,23 +1,32 @@
 const express = require("express");
 const resultadosController = require("../controller/resultados-controller");
+const { adminAuth } = require("../helpers/auth");
 const router = express.Router();
 
 //GET   /resultados
-router.post("/", resultadosController.getResultados);
+router.post("/", adminAuth, resultadosController.getResultados);
 
 //GET   /resultados/all/:clientId
-router.get("/all/:clientId", resultadosController.getAllResultadosByClienteId);
+router.get(
+  "/all/:clientId",
+  adminAuth,
+  resultadosController.getAllResultadosByClienteId
+);
 
 //POST   /resultados/byClienteId
-router.post("/byClienteId", resultadosController.getResultadoByClienteId);
+router.post(
+  "/byClienteId",
+  adminAuth,
+  resultadosController.getResultadoByClienteId
+);
 
 //POST  /resultados
-router.post("/", resultadosController.insertResultado);
+router.post("/", adminAuth, resultadosController.insertResultado);
 
 //PUT   /resultados
-router.put("/", resultadosController.updateResultado);
+router.put("/", adminAuth, resultadosController.updateResultado);
 
 //PUT   /resultados/delete
-router.put("/delete", resultadosController.deleteResultado);
+router.put("/delete", adminAuth, resultadosController.deleteResultado);
 
 module.exports = router;
