@@ -52,6 +52,11 @@ const getLogin = (req, res) => {
 const getNewTokenWithRefreshToken = async (req, res) => {
   const { oRefreshToken } = req.body;
 
+  if (!oRefreshToken) {
+    res.status(400).send();
+    return;
+  }
+
   // get user data from token
   let userTokenData = Object();
   try {
