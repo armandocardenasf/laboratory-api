@@ -7,7 +7,10 @@ const adminAuth = (req, res, next) => {
   const authHeader = req.header("authorization");
   const token = authHeader && authHeader.split(" ")[1];
 
-  if (!token) res.status(401).send();
+  if (!token) {
+    res.status(401).send();
+    return;
+  }
 
   jwt.verify(token, TOKEN_SECRET, (err, data) => {
     const isAdmin = data.type === "ADMINISTRADOR" ? true : false;
@@ -24,7 +27,10 @@ const clientAuth = (req, res, next) => {
   const authHeader = req.header("authorization");
   const token = authHeader && authHeader.split(" ")[1];
 
-  if (!token) res.status(401).send();
+  if (!token) {
+    res.status(401).send();
+    return;
+  }
 
   jwt.verify(token, TOKEN_SECRET, (err, data) => {
     const isClient = data.type === "CLIENTE" ? true : false;
@@ -41,7 +47,10 @@ const userAuth = (req, res, next) => {
   const authHeader = req.header("authorization");
   const token = authHeader && authHeader.split(" ")[1];
 
-  if (!token) res.status(401).send();
+  if (!token) {
+    res.status(401).send();
+    return;
+  }
 
   jwt.verify(token, TOKEN_SECRET, (err, data) => {
     const isUser = data.type === "USUARIO" ? true : false;
@@ -58,7 +67,10 @@ const authUserAndClient = (req, res, next) => {
   const authHeader = req.header("authorization");
   const token = authHeader && authHeader.split(" ")[1];
 
-  if (!token) res.status(401).send();
+  if (!token) {
+    res.status(401).send();
+    return;
+  }
 
   jwt.verify(token, TOKEN_SECRET, (err, data) => {
     const isUserOrClient =
