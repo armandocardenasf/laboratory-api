@@ -10,6 +10,7 @@ const rolesRouter = require("./routes/roles");
 const suscripcionesRouter = require("./routes/suscripciones");
 const usuarioRouter = require("./routes/usuario");
 const filesRouter = require("./routes/files");
+const emailRouter = require("./routes/email");
 const recepcion = require("./routes/recepcion");
 const app = express();
 
@@ -32,6 +33,7 @@ app.use("/roles", rolesRouter);
 app.use("/suscripciones", suscripcionesRouter);
 app.use("/usuario", usuarioRouter);
 app.use("/files", filesRouter);
+app.use("/email", emailRouter);
 app.use("/recepcion", recepcion);
 
 app.listen(PORT, () => {
