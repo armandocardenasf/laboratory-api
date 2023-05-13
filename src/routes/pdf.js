@@ -7,6 +7,6 @@ const oPdfController = require("../controller/pdf-controller");
 router.post("/resultado", adminAuth, oPdfController.sendPdf);
 
 // POST pdf/recepcion
-router.post("/recepcion", adminAuth, oPdfController.sendRecepcionPdf);
+router.post("/recepcion", clientAuth, oPdfController.sendRecepcionPdf);
 
 module.exports = router;
