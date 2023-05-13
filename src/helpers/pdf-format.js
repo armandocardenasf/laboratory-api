@@ -8,34 +8,26 @@ class PdfFormat {
     let info = [];
     data.forEach((element, index, array) => {
       info.push([
-        element.no,
-        element.id,
-        element.m15,
-        element.v15,
-        element.emb,
-        element.mant,
-        element.mc,
-        element.ep,
-        element.et,
-        element.bt,
-        element.s02,
+        element.parametro,
+        element.valor,
+        element.unidad,
+        element.metodologia,
+        element.desviacion_estandar,
+        element.incertidumbre,
+        element.desviacion_metodo,
       ]);
     });
 
     doc.autoTable({
       head: [
         [
-          "No.",
-          "ID",
-          "M15",
-          "V15",
-          "Emb",
-          "Mant",
-          "MC",
-          "EP",
-          "ET",
-          "BT",
-          "S02",
+          "Parametro",
+          "Valor",
+          "Unidad",
+          "Metodologia",
+          "Desviacion estandar",
+          "Incertidumbre",
+          "Dev. del metodo",
         ],
       ],
       body: info,
