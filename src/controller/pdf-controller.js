@@ -5,7 +5,7 @@ const { response } = require("express");
 const JSZip = require("jszip");
 require("jspdf-autotable");
 
-const sendZipPdfs = async (req, res) => {
+const sendPdf = async (req, res) => {
   const { oResultadoId } = req.body;
 
   // get the parameters from db.
@@ -14,41 +14,44 @@ const sendZipPdfs = async (req, res) => {
     .promise()
     .query(query, [oResultadoId]);
 
-  if (!rows) {
+  if (!rows[0]) {
     res.status(500).send("Error");
     return;
   }
 
-  const groupedData = PdfFormat.getGroupedData(rows[0]);
-  const doc = PdfFormat.getDocument(groupedData);
+  const doc = PdfFormat.getDocument(rows[0]);
 
   // send pdf
   const buffer = doc.output();
   res.setHeader("Content-Type", "application/pdf");
   res.setHeader("Content-Disposition", 'attachment; filename="example.pdf"');
   res.status(200).send(buffer);
+};
 
-  // for zip / multiple pdfs
+const sendRecepcionPdf = async (req, res) => {
+  const { oRecepcionId } = req.body;
 
-  // const zip = new JSZip();
-  // for (let i = 0; i < documents.length; i++) {
-  //   const pdfData = documents[i].output("arraybuffer");
-  //   zip.file(`analisis${i}.pdf`, pdfData);
-  // }
+  // get the parameters from db.
+  const query = "CALL GetRecepcionParameterValueSP(?);";
+  const [rows, fields] = await oMySQLConnection
+    .promise()
+    .query(query, [oRecepcionId]);
 
-  // zip
-  //   .generateAsync({ type: "nodebuffer" })
-  //   .then((content) => {
-  //     res.set("Content-Type", "application/zip");
-  //     res.set("Content-Disposition", "attachment; filename=pdfs.zip");
-  //     res.send(content);
-  //   })
-  //   .catch((err) => {
-  //     console.error(err);
-  //     res.status(500).send(err.message);
-  //   });
+  if (!rows[0]) {
+    res.status(500).send("Error");
+    return;
+  }
+
+  const doc = PdfFormat.getDocument(rows[0]);
+
+  // send pdf
+  const buffer = doc.output();
+  res.setHeader("Content-Type", "application/pdf");
+  res.setHeader("Content-Disposition", 'attachment; filename="example.pdf"');
+  res.status(200).send(buffer);
 };
 
 module.exports = {
-  sendZipPdfs,
+  sendPdf,
+  sendRecepcionPdf,
 };
