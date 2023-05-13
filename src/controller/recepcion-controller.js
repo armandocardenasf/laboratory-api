@@ -103,6 +103,7 @@ const deleteRecepcion = (req, res) => {
     }
   });
 };
+
 //EXPORTS
 module.exports = {
   getRecepcion,

@@ -11,6 +11,7 @@ const suscripcionesRouter = require("./routes/suscripciones");
 const usuarioRouter = require("./routes/usuario");
 const filesRouter = require("./routes/files");
 const emailRouter = require("./routes/email");
+const pdfRouter = require("./routes/pdf");
 const recepcion = require("./routes/recepcion");
 const app = express();
 
@@ -34,6 +35,7 @@ app.use("/suscripciones", suscripcionesRouter);
 app.use("/usuario", usuarioRouter);
 app.use("/files", filesRouter);
 app.use("/email", emailRouter);
+app.use("/pdf", pdfRouter);
 app.use("/recepcion", recepcion);
 
 app.listen(PORT, () => {
