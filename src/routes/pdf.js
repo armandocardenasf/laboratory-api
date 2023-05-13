@@ -4,7 +4,7 @@ const { adminAuth, clientAuth } = require("../helpers/auth");
 const oPdfController = require("../controller/pdf-controller");
 
 // POST pdf/resultado
-router.post("/resultado", adminAuth, oPdfController.sendPdf);
+router.post("/resultado", clientAuth, oPdfController.sendPdf);
 
 // POST pdf/recepcion
 router.post("/recepcion", clientAuth, oPdfController.sendRecepcionPdf);
