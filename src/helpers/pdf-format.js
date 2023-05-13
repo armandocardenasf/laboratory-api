@@ -2,9 +2,11 @@ const { jsPDF } = require("jspdf");
 require("jspdf-autotable");
 
 class PdfFormat {
-  static getFormattedData(groupedData) {
-    const formattedData = [];
+  static getDocument(groupedData) {
+    const doc = new jsPDF();
+    // const docs = [];
     for (let i = 0; i < groupedData[0].values.length; i++) {
+      const tmp = [];
       for (let j = 0; j < groupedData.length; j++) {
         const { key, unit, values } = groupedData[j];
 
@@ -16,7 +18,7 @@ class PdfFormat {
           .normalize("NFD")
           .replace(/[\u0300-\u036f]/g, "");
 
-        formattedData.push({
+        tmp.push({
           parametro: normalizedKey,
           valor: normalizedValue,
           unidad: unit,
@@ -26,9 +28,13 @@ class PdfFormat {
           desviacion_metodo: "desviacion metodo",
         });
       }
+      this.insertTableIntoDocument(tmp, doc);
+      // const doc = this.createPdf(tmp);
+      // docs.push(doc);
     }
 
-    return formattedData;
+    // return docs;
+    return doc;
   }
 
   static getGroupedData(data) {
@@ -45,9 +51,7 @@ class PdfFormat {
     }, []);
   }
 
-  static generate(data) {
-    const doc = new jsPDF();
-
+  static insertTableIntoDocument(data, doc) {
     let info = [];
     data.forEach((element, index, array) => {
       info.push([
@@ -62,6 +66,7 @@ class PdfFormat {
     });
 
     doc.autoTable({
+      pageBreak: "always",
       head: [
         [
           "Parametro",
@@ -76,7 +81,7 @@ class PdfFormat {
       body: info,
     });
 
-    return doc;
+    doc;
   }
 }
 

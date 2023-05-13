@@ -2,9 +2,10 @@ const oMySQLConnection = require("../database");
 const { jsPDF } = require("jspdf");
 const PdfFormat = require("../helpers/pdf-format");
 const { response } = require("express");
+const JSZip = require("jszip");
 require("jspdf-autotable");
 
-const sendPDF = async (req, res) => {
+const sendZipPdfs = async (req, res) => {
   const { oResultadoId } = req.body;
 
   // get the parameters from db.
@@ -19,16 +20,35 @@ const sendPDF = async (req, res) => {
   }
 
   const groupedData = PdfFormat.getGroupedData(rows[0]);
-  const formattedData = PdfFormat.getFormattedData(groupedData);
-  const doc = PdfFormat.generate(formattedData);
+  const doc = PdfFormat.getDocument(groupedData);
 
   // send pdf
   const buffer = doc.output();
   res.setHeader("Content-Type", "application/pdf");
   res.setHeader("Content-Disposition", 'attachment; filename="example.pdf"');
   res.status(200).send(buffer);
+
+  // for zip / multiple pdfs
+
+  // const zip = new JSZip();
+  // for (let i = 0; i < documents.length; i++) {
+  //   const pdfData = documents[i].output("arraybuffer");
+  //   zip.file(`analisis${i}.pdf`, pdfData);
+  // }
+
+  // zip
+  //   .generateAsync({ type: "nodebuffer" })
+  //   .then((content) => {
+  //     res.set("Content-Type", "application/zip");
+  //     res.set("Content-Disposition", "attachment; filename=pdfs.zip");
+  //     res.send(content);
+  //   })
+  //   .catch((err) => {
+  //     console.error(err);
+  //     res.status(500).send(err.message);
+  //   });
 };
 
 module.exports = {
-  sendPDF,
+  sendZipPdfs,
 };
