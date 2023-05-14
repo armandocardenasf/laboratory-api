@@ -77,7 +77,7 @@ const authUserAndClient = (req, res, next) => {
       data.type === "CLIENTE" || data.type === "USUARIO" ? true : false;
 
     if (err || !isUserOrClient) {
-      res.send(403).send();
+      res.status(403).send();
     } else {
       next();
     }

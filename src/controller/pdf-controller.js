@@ -5,7 +5,7 @@ const { response } = require("express");
 const JSZip = require("jszip");
 require("jspdf-autotable");
 
-const sendPdf = async (req, res) => {
+const getPdf = async (req, res) => {
   const { oResultadoId } = req.body;
 
   // get the parameters from db.
@@ -28,14 +28,14 @@ const sendPdf = async (req, res) => {
   res.status(200).send(buffer);
 };
 
-const sendRecepcionPdf = async (req, res) => {
-  const { oRecepcionId } = req.body;
+const getRecepcionPdf = async (req, res) => {
+  const { oIdRecepcion } = req.body;
 
   // get the parameters from db.
   const query = "CALL GetRecepcionParameterValueSP(?);";
   const [rows, fields] = await oMySQLConnection
     .promise()
-    .query(query, [oRecepcionId]);
+    .query(query, [oIdRecepcion]);
 
   if (!rows[0]) {
     res.status(500).send("Error");
@@ -52,6 +52,6 @@ const sendRecepcionPdf = async (req, res) => {
 };
 
 module.exports = {
-  sendPdf,
-  sendRecepcionPdf,
+  getPdf,
+  getRecepcionPdf,
 };

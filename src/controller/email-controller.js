@@ -1,37 +1,45 @@
 const oMySQLConnection = require("../database");
 const nodemailer = require("nodemailer");
 const transporter = require("../helpers/email-transporter");
+const PdfFormat = require("../helpers/pdf-format");
 
 const sendEmail = async (req, res) => {
   const { oIdRecepcion } = req.body;
 
-  //
-  // TODO: validate Recepcion current state to determine if the email can be sent or not.
-  //
-
-  // get the user's email.
-  let email = "";
-
   let query = "CALL GetRecepcionExternoEmailSP(?);";
-  const [rows, reponse] = await oMySQLConnection
+  const [rows2, reponse2] = await oMySQLConnection
     .promise()
     .query(query, [oIdRecepcion]);
 
-  email = rows[0][0].correo;
+  email = rows2[0][0].correo;
 
   if (!email) {
     res.status(500).send("The email couldn't be sent.");
     return;
   }
 
+  // get data from email.
+  query = "CALL GetRecepcionParameterValueSP(?);";
+  const [rows, fields] = await oMySQLConnection
+    .promise()
+    .query(query, [oIdRecepcion]);
+
+  const doc = PdfFormat.getDocument(rows[0]);
+  const buffer = doc.output();
+
+  // set email.
   const mailOptions = {
     from: "lab.cevit@cetys.mx",
     to: email,
-    subject: "Prueba de correo",
-    text: "Esta es una prueba usando nodemailer.",
+    subject: `Documentación de análisis (${new Date().toJSON().slice(0, 10)})`,
+    attachments: [
+      {
+        filename: "analisis.pdf",
+        content: buffer,
+        contentType: "application/pdf",
+      },
+    ],
   };
-
-  console.log(email);
 
   // send the email.
   await transporter.sendMail(mailOptions, function (error, info) {
@@ -43,7 +51,7 @@ const sendEmail = async (req, res) => {
 
   // update email state to sent.
   query = "CALL UpdateSendEmailSP(?);";
-  const [rows2, reponse2] = await oMySQLConnection
+  const [rows3, reponse3] = await oMySQLConnection
     .promise()
     .query(query, [oIdRecepcion]);
 
