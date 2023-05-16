@@ -1,6 +1,6 @@
 const express = require("express");
 const externoParametro = require("../controller/externo-controller");
-const { adminAuth } = require("../helpers/auth");
+const { adminAuth, authUserAndClient } = require("../helpers/auth");
 const router = express.Router();
 
 //GET   /externo
@@ -10,7 +10,7 @@ router.get("/", adminAuth, externoParametro.getExterno);
 router.post("/byid", adminAuth, externoParametro.getExternoById);
 
 //POST   /externo/byUserid
-router.post("/byUserid", adminAuth, externoParametro.getExternoByUserId);
+router.post("/byUserid", authUserAndClient, externoParametro.getExternoByUserId);
 
 //POST  /externo
 router.post("/", adminAuth, externoParametro.insertExterno);
