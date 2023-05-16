@@ -3,6 +3,12 @@ services:
     build: .
     ports:
       - "80:80"
-    env_file:
-      - .env
-
+    environment:
+      - HOST
+      - USER
+      - PASSWORD
+      - DATABASE
+      - TOKEN_SECRET
+      - REFRESH_TOKEN_SECRET
+    # env_file:
+    #   - .env
