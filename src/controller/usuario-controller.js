@@ -67,7 +67,7 @@ const getNewTokenWithRefreshToken = async (req, res) => {
       }
 
       userTokenData = {
-        email: data.email,
+        id: data.id,
         type: data.type,
       };
     });
@@ -84,10 +84,10 @@ const getNewTokenWithRefreshToken = async (req, res) => {
   }
 
   // check if user exists.
-  let query = "SELECT COUNT(*) as count FROM usuario WHERE correo = ?;";
+  let query = "SELECT COUNT(*) as count FROM usuario WHERE id = ?;";
   const [rows, fields] = await oMySQLConnection
     .promise()
-    .query(query, [userTokenData.email]);
+    .query(query, [userTokenData.id]);
 
   if (rows[0].count == 0) {
     res.status(403).send();
@@ -95,7 +95,7 @@ const getNewTokenWithRefreshToken = async (req, res) => {
   }
 
   // user exists. Get new token.
-  const token = generateToken(userTokenData.email, userTokenData.type);
+  const token = generateToken(userTokenData.id, userTokenData.type);
   res.status(200).json({ token: token });
 };
 
@@ -135,7 +135,7 @@ const getTypeUser = async (idTypeUser) => {
 const getAccessTokens = async (req, res) => {
   /*
   Function which purpose is to get the corresponding JWT and refresh token for the user. The JWT token consists of
-  2 different components, which are the email and the type of the user.
+  2 different components, which are the id and the type of the user.
   */
   const { oUser, oPass } = req.body;
 
@@ -147,6 +147,7 @@ const getAccessTokens = async (req, res) => {
     typeUser = await getTypeUser(idTypeUser);
   } catch (e) {
     res.status(500).send();
+    return;
   }
 
   if (!typeUser) {
@@ -154,8 +155,21 @@ const getAccessTokens = async (req, res) => {
     return;
   }
 
-  const token = generateToken(oUser, typeUser);
-  const refreshToken = generateRefreshToken(oUser, typeUser);
+  // get the id of the user from the email.
+  let query = "SELECT id FROM usuario WHERE correo = ?;";
+  const [rows, fields] = await oMySQLConnection.promise().query(query, [oUser]);
+
+  let idUser = 0;
+
+  if (rows[0]) {
+    idUser = rows[0].id;
+  } else {
+    res.status(500).send();
+    return;
+  }
+
+  const token = generateToken(idUser, typeUser);
+  const refreshToken = generateRefreshToken(idUser, typeUser);
 
   const data = {
     token: token,
@@ -163,7 +177,7 @@ const getAccessTokens = async (req, res) => {
   };
 
   // PUT refresh token and expiration date NOW in db.
-  const query = "CALL UpdateRefreshTokenSP(?, ?);";
+  query = "CALL UpdateRefreshTokenSP(?, ?);";
   await oMySQLConnection.promise().query(query, [refreshToken, oUser]);
 
   res.json(data);

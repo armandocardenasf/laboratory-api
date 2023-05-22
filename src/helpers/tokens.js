@@ -4,18 +4,18 @@ const jwt = require("jsonwebtoken");
 const TOKEN_SECRET = process.env.TOKEN_SECRET;
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
 
-const generateToken = (email, type) => {
+const generateToken = (id, type) => {
   const data = {
-    email: email,
+    id: id,
     type: type,
   };
 
   return jwt.sign(data, TOKEN_SECRET, { expiresIn: "15m" });
 };
 
-const generateRefreshToken = (email, type) => {
+const generateRefreshToken = (id, type) => {
   const data = {
-    email: email,
+    id: id,
     type: type,
   };
 
