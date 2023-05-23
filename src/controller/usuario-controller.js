@@ -1,4 +1,5 @@
 const oMySQLConnection = require("../database");
+const { hashPassword, verifyPassword } = require("../helpers/hashing");
 const {
   generateToken,
   generateRefreshToken,
@@ -34,17 +35,36 @@ const getUsuarioById = (req, res) => {
 };
 
 // LOGIN OF USER.
-const getLogin = (req, res) => {
+const getLogin = async (req, res) => {
   const { oUser, oPass } = req.body;
 
-  // TODO: hash password and modify the function.
+  // grab hashed password from db.
+  query = "SELECT password FROM usuario WHERE correo = ?;";
+  const [rows, fields] = await oMySQLConnection.promise().query(query, [oUser]);
 
-  query = "CALL LoginSP(?,?);";
-  oMySQLConnection.query(query, [oUser, oPass], (err, rows, fields) => {
+  let hashedPassword = "";
+  if (rows.length > 0) {
+    hashedPassword = rows[0].password;
+  } else {
+    res.status(401).send();
+    return;
+  }
+
+  const isValid = await verifyPassword(oPass, hashedPassword);
+
+  if (!isValid) {
+    res.status(401).send();
+    return;
+  }
+
+  // get data from user only if the password is valid.
+  query = "CALL LoginSP(?);";
+  oMySQLConnection.query(query, [oUser], (err, rows, fields) => {
     if (!err) {
       res.json(rows);
     } else {
       console.log(err);
+      res.status(401).send();
     }
   });
 };
@@ -142,8 +162,27 @@ const getAccessTokens = async (req, res) => {
   let idTypeUser = 0;
   let typeUser = "";
 
+  let query = "SELECT password FROM usuario WHERE correo = ?;";
+  const [rows, fields] = await oMySQLConnection.promise().query(query, [oUser]);
+
+  let hashedPassword = "";
+  if (rows.length > 0) {
+    hashedPassword = rows[0].password;
+  } else {
+    res.status(401).send();
+    return;
+  }
+
+  // verify the password validity.
+  const isValid = await verifyPassword(oPass, hashedPassword);
+
+  if (!isValid) {
+    res.status(401).send();
+    return;
+  }
+
   try {
-    idTypeUser = await getIdTypeUser(oUser, oPass);
+    idTypeUser = await getIdTypeUser(oUser, hashedPassword);
     typeUser = await getTypeUser(idTypeUser);
   } catch (e) {
     res.status(500).send();
@@ -156,13 +195,15 @@ const getAccessTokens = async (req, res) => {
   }
 
   // get the id of the user from the email.
-  let query = "SELECT id FROM usuario WHERE correo = ?;";
-  const [rows, fields] = await oMySQLConnection.promise().query(query, [oUser]);
+  query = "SELECT id FROM usuario WHERE correo = ?;";
+  const [rows2, fields2] = await oMySQLConnection
+    .promise()
+    .query(query, [oUser]);
 
   let idUser = 0;
 
-  if (rows[0]) {
-    idUser = rows[0].id;
+  if (rows2[0]) {
+    idUser = rows2[0].id;
   } else {
     res.status(500).send();
     return;
