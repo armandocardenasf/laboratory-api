@@ -3,6 +3,9 @@ const jwt = require("jsonwebtoken");
 
 const TOKEN_SECRET = process.env.TOKEN_SECRET;
 
+// ** NOTE **
+// res.locals.user has properties id and type as in the jwt itself.
+
 const adminAuth = (req, res, next) => {
   const authHeader = req.header("authorization");
   const token = authHeader && authHeader.split(" ")[1];
@@ -18,6 +21,7 @@ const adminAuth = (req, res, next) => {
     if (err || !isAdmin) {
       res.status(403).send();
     } else {
+      res.locals.user = data;
       next();
     }
   });
@@ -38,6 +42,7 @@ const clientAuth = (req, res, next) => {
     if (err || !isClient) {
       res.send(403).send();
     } else {
+      res.locals.user = data;
       next();
     }
   });
@@ -58,6 +63,7 @@ const userAuth = (req, res, next) => {
     if (err || !isUser) {
       res.send(403).send();
     } else {
+      res.locals.user = data;
       next();
     }
   });
@@ -79,6 +85,7 @@ const authUserAndClient = (req, res, next) => {
     if (err || !isUserOrClient) {
       res.status(403).send();
     } else {
+      res.locals.user = data;
       next();
     }
   });
