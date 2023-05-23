@@ -73,6 +73,7 @@ const authUserAndClient = (req, res, next) => {
   }
 
   jwt.verify(token, TOKEN_SECRET, (err, data) => {
+    console.log(data)
     const isUserOrClient =
       data.type === "CLIENTE" || data.type === "USUARIO" ? true : false;
 
