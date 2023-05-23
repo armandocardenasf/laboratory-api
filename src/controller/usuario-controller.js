@@ -235,14 +235,15 @@ const securedRouteClient = (req, res) => {
 };
 
 //CREATES
-const insertUsuario = (req, res) => {
+const insertUsuario = async (req, res) => {
   const { oNombre, oApellido, oCorreo, oPass, oTelefono, oRolId } = req.body;
 
-  const query = "CALL InsertUsuarioSP(?,?,?,?,?,?);";
+  const hashedPassword = await hashPassword(oPass);
 
+  const query = "CALL InsertUsuarioSP(?,?,?,?,?,?);";
   oMySQLConnection.query(
     query,
-    [oNombre, oApellido, oCorreo, oPass, oTelefono, oRolId],
+    [oNombre, oApellido, oCorreo, hashedPassword, oTelefono, oRolId],
     (err, rows, fields) => {
       if (!err) {
         res.json(rows);
@@ -272,18 +273,23 @@ const updateUsuario = (req, res) => {
     }
   );
 };
-const updatePass = (req, res) => {
+const updatePass = async (req, res) => {
   const { oUsuarioId, oPass } = req.body;
 
-  const query = "CALL UpdatePasswordSP(?,?);";
+  const hashedPassword = await hashPassword(oPass);
 
-  oMySQLConnection.query(query, [oUsuarioId, oPass], (err, rows, fields) => {
-    if (!err) {
-      res.json(rows);
-    } else {
-      console.log(err);
+  const query = "CALL UpdatePasswordSP(?,?);";
+  oMySQLConnection.query(
+    query,
+    [oUsuarioId, hashedPassword],
+    (err, rows, fields) => {
+      if (!err) {
+        res.json(rows);
+      } else {
+        console.log(err);
+      }
     }
-  });
+  );
 };
 
 //DELETES
