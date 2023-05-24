@@ -43,9 +43,9 @@ const getRecepcionPdf = async (req, res) => {
   }
 
   const doc = PdfFormat.getDocument(rows[0]);
+  const buffer = doc.output();
 
   // send pdf
-  const buffer = doc.output();
   res.setHeader("Content-Type", "application/pdf");
   res.setHeader("Content-Disposition", 'attachment; filename="example.pdf"');
   res.status(200).send(buffer);

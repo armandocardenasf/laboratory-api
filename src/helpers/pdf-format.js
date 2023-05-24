@@ -6,9 +6,13 @@ const NUMBER_OF_PARAMETERS_PER_TABLE = 26;
 class PdfFormat {
   static getDocument(data) {
     const doc = new jsPDF();
-    for (let i = 0; i <= data.length % NUMBER_OF_PARAMETERS_PER_TABLE; i++) {
+    for (
+      let i = 0;
+      i < Math.floor(data.length / NUMBER_OF_PARAMETERS_PER_TABLE);
+      i++
+    ) {
       const tmp = [];
-      for (let j = 0; j < data.length; j++) {
+      for (let j = 0; j < NUMBER_OF_PARAMETERS_PER_TABLE; j++) {
         const { nombre, unidades, valor } =
           data[i * NUMBER_OF_PARAMETERS_PER_TABLE + j];
 
@@ -50,7 +54,6 @@ class PdfFormat {
     });
 
     doc.autoTable({
-      pageBreak: "always",
       head: [
         [
           "Parametro",
@@ -64,8 +67,7 @@ class PdfFormat {
       ],
       body: info,
     });
-
-    doc;
+    doc.addPage();
   }
 }
 
