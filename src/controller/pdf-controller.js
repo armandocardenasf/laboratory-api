@@ -5,34 +5,34 @@ const { response } = require("express");
 const JSZip = require("jszip");
 require("jspdf-autotable");
 
-const getPdf = async (req, res) => {
-  const { oResultadoId } = req.body;
+// const getPdf = async (req, res) => {
+//   const { oResultadoId } = req.body;
 
-  // get the parameters from db.
-  const query = "CALL GetResultadoParameterValueSP(?);";
-  const [rows, fields] = await oMySQLConnection
-    .promise()
-    .query(query, [oResultadoId]);
+//   // get the parameters from db.
+//   const query = "CALL GetResultadoParameterValueSP(?);";
+//   const [rows, fields] = await oMySQLConnection
+//     .promise()
+//     .query(query, [oResultadoId]);
 
-  if (!rows[0]) {
-    res.status(500).send("Error");
-    return;
-  }
+//   if (!rows[0]) {
+//     res.status(500).send("Error");
+//     return;
+//   }
 
-  const doc = PdfFormat.getDocument(rows[0]);
+//   const doc = PdfFormat.getDocument(rows[0]);
 
-  // send pdf
-  const buffer = doc.output();
-  res.setHeader("Content-Type", "application/pdf");
-  res.setHeader("Content-Disposition", 'attachment; filename="example.pdf"');
-  res.status(200).send(buffer);
-};
+//   // send pdf
+//   const buffer = doc.output();
+//   res.setHeader("Content-Type", "application/pdf");
+//   res.setHeader("Content-Disposition", 'attachment; filename="example.pdf"');
+//   res.status(200).send(buffer);
+// };
 
 const getRecepcionPdf = async (req, res) => {
   const { oIdRecepcion } = req.body;
 
   // get the parameters from db.
-  const query = "CALL GetRecepcionParameterValueSP(?);";
+  let query = "CALL GetRecepcionParameterValueSP(?);";
   const [rows, fields] = await oMySQLConnection
     .promise()
     .query(query, [oIdRecepcion]);
@@ -42,16 +42,28 @@ const getRecepcionPdf = async (req, res) => {
     return;
   }
 
-  const doc = PdfFormat.getDocument(rows[0]);
+  // get all the data from the reception & client.
+  query = "CALL GetPdfDataSP(?)"; //
+  [rows2, fields2] = await oMySQLConnection
+    .promise()
+    .query(query, [oIdRecepcion]);
+
+  // client and reception.
+  const clientData = rows2[0][0];
+  const receptionData = rows[0];
+
+  const doc = new PdfFormat()
+    .setClientData(clientData)
+    .getDocument(receptionData);
+  const buffer = doc.output();
 
   // send pdf
-  const buffer = doc.output();
   res.setHeader("Content-Type", "application/pdf");
   res.setHeader("Content-Disposition", 'attachment; filename="example.pdf"');
   res.status(200).send(buffer);
 };
 
 module.exports = {
-  getPdf,
+  // getPdf,
   getRecepcionPdf,
 };
