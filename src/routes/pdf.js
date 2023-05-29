@@ -7,6 +7,13 @@ const oPdfController = require("../controller/pdf-controller");
 // router.post("/resultado", authUserAndClient, oPdfController.getPdf);
 
 // POST pdf/recepcion
-router.post("/recepcion", authUserAndClient, oPdfController.getRecepcionPdf);
+// router.post("/recepcion", authUserAndClient, oPdfController.getRecepcionPdf);
+
+// POST pdf/getExcelFormat
+router.post(
+  "/getExcelFormat",
+  authUserAndClient,
+  oPdfController.getExcelFormat
+);
 
 module.exports = router;
