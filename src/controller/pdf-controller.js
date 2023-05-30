@@ -88,7 +88,7 @@ const getExcelFormat = async (req, res) => {
   const clientData = rows2[0][0];
   const receptionData = rows[0];
 
-  const doc = await new ExcelDocument().createFormat();
+  const doc = await new ExcelDocument().createFormat(clientData, receptionData);
   const buffer = await doc.getBuffer();
 
   // send excel
