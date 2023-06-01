@@ -7,6 +7,12 @@ const fs = require("fs");
 const oMySQLConnection = require("../database");
 const { adminAuth } = require("../helpers/auth");
 
+const DesviacionEstandar = (oDato) => {
+  const oCuadrado = Math.pow(oDato, 2);
+  const oDivision = oCuadrado / 22;
+  const oResultado = Math.sqrt(oDivision);
+  return oResultado;
+};
 // defining a middleware to only accept csv files.
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -54,22 +60,27 @@ router.post(
 
     const csvData = req.file.buffer.toString();
 
-    let header = null;
+    let header = "";
     const results = [];
+    let oSumatoria = 0.0;
     csv()
       .on("headers", (headers) => {
         header = headers;
       })
       .on("data", (data) => results.push(data))
       .on("end", () => {
-        console.log("Data successfully uploaded.");
+        console.log("Data");
       })
       .write(csvData);
+
+    results.map((rec, cont) => {
+      oSumatoria = oSumatoria + Number(rec[header[cont]]);
+    });
+    console.log("", DesviacionEstandar(oSumatoria));
+
     const idParameters = await getParametersId(header);
-    console.log(csvData, "===");
     try {
       for (const analysis of results) {
-        console.log(analysis);
         // resultId = await insertResult(analysis, userId);
         // if (!resultId) {
         //   continue;
