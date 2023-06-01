@@ -55,8 +55,6 @@ class ExcelDocument {
         currSheetData[nombre] = valor;
       }
 
-      console.log(currSheetData);
-
       detailWorksheet.getCell("W11").value = currSheetData["Nombre"];
       detailWorksheet.getCell("J11").value = currSheetData["Modelo"];
       detailWorksheet.getCell("J12").value = "Condición";
