@@ -16,6 +16,11 @@ const adminAuth = (req, res, next) => {
   }
 
   jwt.verify(token, TOKEN_SECRET, (err, data) => {
+    if (!data) {
+      res.status(401).send();
+      return;
+    }
+
     const isAdmin = data.type === "ADMINISTRADOR" ? true : false;
 
     if (err || !isAdmin) {
@@ -37,6 +42,11 @@ const clientAuth = (req, res, next) => {
   }
 
   jwt.verify(token, TOKEN_SECRET, (err, data) => {
+    if (!data) {
+      res.status(401).send();
+      return;
+    }
+
     const isClient = data.type === "CLIENTE" ? true : false;
 
     if (err || !isClient) {
@@ -58,6 +68,11 @@ const userAuth = (req, res, next) => {
   }
 
   jwt.verify(token, TOKEN_SECRET, (err, data) => {
+    if (!data) {
+      res.status(401).send();
+      return;
+    }
+
     const isUser = data.type === "USUARIO" ? true : false;
 
     if (err || !isUser) {
@@ -79,6 +94,11 @@ const authUserAndClient = (req, res, next) => {
   }
 
   jwt.verify(token, TOKEN_SECRET, (err, data) => {
+    if (!data) {
+      res.status(401).send();
+      return;
+    }
+
     const isUserOrClient =
       data.type === "CLIENTE" || data.type === "USUARIO" ? true : false;
 
