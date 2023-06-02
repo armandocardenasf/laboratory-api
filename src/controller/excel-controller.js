@@ -16,7 +16,7 @@ const getExcelFormat = async (req, res) => {
   }
 
   // get all the data from the reception & client.
-  query = "CALL GetPdfDataSP(?)"; //
+  query = "CALL GetExcelClientDataSP(?)"; //
   [rows2, fields2] = await oMySQLConnection
     .promise()
     .query(query, [oIdRecepcion]);

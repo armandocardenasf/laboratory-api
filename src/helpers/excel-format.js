@@ -12,13 +12,13 @@ class ExcelDocument {
     await this.workbook.xlsx.readFile("./src/assets/format.xlsx");
 
     const generalInfoWorksheet = this.workbook.getWorksheet("Portada");
-    generalInfoWorksheet.getCell("L12").value = "6"; // Número de muestras
-    generalInfoWorksheet.getCell("H13").value = "Observaciones generales"; // Observaciones generales
+    generalInfoWorksheet.getCell("L12").value = clientData["TotalMuestras"]; // Número de muestras
+    generalInfoWorksheet.getCell("H13").value = clientData["observaciones"]; // Observaciones generales
 
     // general information about the results.
     generalInfoWorksheet.getCell("X10").value = clientData["Folio"]; // Número de folio
-    generalInfoWorksheet.getCell("X11").value = "Something"; // Fecha de informe
-    generalInfoWorksheet.getCell("X12").value = "FechaAnalisis"; // Fecha de análisis
+    generalInfoWorksheet.getCell("X11").value = clientData["FechaInforme"]; // Fecha de informe
+    generalInfoWorksheet.getCell("X12").value = clientData["FechaAnalisis"]; // Fecha de análisis
     generalInfoWorksheet.getCell("X13").value = clientData["FechaRecepcion"]; // Fecha de recepción
     generalInfoWorksheet.getCell("X14").value = clientData["FechaMuestreo"]; // Fecha de muestreo
 
@@ -54,8 +54,6 @@ class ExcelDocument {
 
         currSheetData[nombre] = valor;
       }
-
-      console.log(currSheetData);
 
       detailWorksheet.getCell("W11").value = currSheetData["Nombre"];
       detailWorksheet.getCell("J11").value = currSheetData["Modelo"];
