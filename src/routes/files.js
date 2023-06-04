@@ -52,14 +52,20 @@ router.post(
 
     // see if any of the results is repeated.
     for (const analysis of results) {
-      let query = "SELECT Folio FROM Recepcion WHERE Folio = ?;";
+      let query = `SELECT rec.Folio AS folio, COUNT(*) AS count FROM resultados res
+        INNER JOIN Recepcion AS rec
+          ON res.Recepcion_id = rec.id
+        WHERE Folio = ?;`;
       const [rows, fields] = await oMySQLConnection
         .promise()
         .query(query, [analysis["FOLIO"]]);
 
-      if (rows[0]) {
-        res.status(400).send(`Folio ${rows[0].Folio} repetido.`);
-        return;
+      if (rows[0].count > 0) {
+        res
+          .status(400)
+          .send(
+            `Los datos del folio ${rows[0].folio} ya fueron subidos exitosamente.`
+          );
       }
     }
 

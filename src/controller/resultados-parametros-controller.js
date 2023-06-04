@@ -10,6 +10,7 @@ const getResultadosParametrosByResultadoId = (req, res) => {
     if (!err) {
       res.json(rows);
     } else {
+      console.log(err);
       res.status(400).send("Bad request.");
     }
   });
