@@ -57,7 +57,7 @@ router.post(
         .promise()
         .query(query, [analysis["FOLIO"]]);
 
-      if (rows[0].Folio) {
+      if (rows[0]) {
         res.status(400).send(`Folio ${rows[0].Folio} repetido.`);
         return;
       }
@@ -65,7 +65,20 @@ router.post(
 
     try {
       for (const analysis of results) {
-        resultId = await insertResult(analysis, userId);
+        try {
+          resultId = await insertResult(analysis, userId);
+        } catch (e) {
+          if (e.code === "ER_SIGNAL_EXCEPTION") {
+            res
+              .status(400)
+              .send(
+                `El Folio ${analysis["FOLIO"]} no posee un formato de recepción válido.`
+              );
+            return;
+          }
+          res.status(500).send("Something went wrong.");
+          return;
+        }
 
         if (!resultId) {
           continue;
