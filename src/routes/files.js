@@ -52,20 +52,40 @@ router.post(
 
     // see if any of the results is repeated.
     for (const analysis of results) {
-      let query = "SELECT Folio FROM Recepcion WHERE Folio = ?;";
+      let query = `SELECT rec.Folio AS folio, COUNT(*) AS count FROM resultados res
+        INNER JOIN Recepcion AS rec
+          ON res.Recepcion_id = rec.id
+        WHERE Folio = ?;`;
       const [rows, fields] = await oMySQLConnection
         .promise()
         .query(query, [analysis["FOLIO"]]);
 
-      if (rows[0].Folio) {
-        res.status(400).send(`Folio ${rows[0].Folio} repetido.`);
+      if (rows[0].count > 0) {
+        res
+          .status(400)
+          .send(
+            `Los datos del folio ${rows[0].folio} ya fueron subidos exitosamente.`
+          );
         return;
       }
     }
 
     try {
       for (const analysis of results) {
-        resultId = await insertResult(analysis, userId);
+        try {
+          resultId = await insertResult(analysis, userId);
+        } catch (e) {
+          if (e.code === "ER_SIGNAL_EXCEPTION") {
+            res
+              .status(400)
+              .send(
+                `El Folio ${analysis["FOLIO"]} no posee un formato de recepción válido.`
+              );
+            return;
+          }
+          res.status(500).send("Something went wrong.");
+          return;
+        }
 
         if (!resultId) {
           continue;
