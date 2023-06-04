@@ -7,11 +7,15 @@ const fs = require("fs");
 const oMySQLConnection = require("../database");
 const { adminAuth } = require("../helpers/auth");
 
-const DesviacionEstandar = (oDato) => {
-  const oCuadrado = Math.pow(oDato, 2);
-  const oDivision = oCuadrado / 22;
-  const oResultado = Math.sqrt(oDivision);
-  return oResultado;
+const DesviacionEstandar = (oDato, oLista) => {
+  var oMedia = oDato / oLista.length;
+  var oSumaCuadradosDiferencias = 0;
+  oLista.forEach(function (oNum) {
+    var diferencia = oNum - oMedia;
+    oSumaCuadradosDiferencias += Math.pow(diferencia, 2);
+  });
+  var oDesviacion = Math.sqrt(oSumaCuadradosDiferencias / oLista.length);
+  return oDesviacion;
 };
 // defining a middleware to only accept csv files.
 const upload = multer({
@@ -62,7 +66,10 @@ router.post(
 
     let header = "";
     const results = [];
-    let oSumatoria = 0.0;
+    let oSumatoria = 0;
+    let oArray = [];
+    let oRefAgua = "";
+    let oRefEtanol = "";
     csv()
       .on("headers", (headers) => {
         header = headers;
@@ -72,39 +79,35 @@ router.post(
         console.log("Data");
       })
       .write(csvData);
-
-    results.map((rec, cont) => {
-      oSumatoria = oSumatoria + Number(rec[header[cont]]);
-    });
-    console.log("", DesviacionEstandar(oSumatoria));
-
-    const idParameters = await getParametersId(header);
-    try {
-      for (const analysis of results) {
-        // resultId = await insertResult(analysis, userId);
-        // if (!resultId) {
-        //   continue;
-        // }
-        // check if relevant parameters to append to the result.
-        // if: is part of the result data.
-        //   if (query) {
-        //     const [rows, fields] = await oMySQLConnection
-        //       .promise()
-        //       .query(query, [resultParameter, resultId]);
-        //   } else {
-        //     await insertResultParameter(
-        //       idParameter,
-        //       resultId,
-        //       analysis[parameter]
-        //     );
-        //   }
+    for (let i = 6; i < header.length; i++) {
+      results.map((rec, cont) => {
+        oSumatoria += Number(rec[header[i]].replace(/[^0-9.]/g, ""));
+        oArray.push(Number(rec[header[i]].replace(/[^0-9.]/g, "")));
+        oRefAgua = rec[header[4]];
+        oRefEtanol = rec[header[5]];
+      });
+      console.log(
+        "DESVIACION DE: " + header[i],
+        DesviacionEstandar(oSumatoria, oArray)
+      );
+      try {
+        const oDesviacion = DesviacionEstandar(oSumatoria, oArray);
+        const oParametro = header[i];
+        const query = "CALL InsertCalculosSP(?,?,?,?);";
+        oMySQLConnection.query(query, [
+          oParametro,
+          oDesviacion.toFixed(4),
+          oRefAgua,
+          oRefEtanol,
+        ]);
+      } catch (e) {
+        console.log(e);
+        res.status(500).send("Something went wrong.");
+        return;
       }
-    } catch (e) {
-      console.log(e);
-      res.status(500).send("Something went wrong.");
-      return;
+      oSumatoria = 0;
+      oArray = [];
     }
-
     res.status(200).send("Data insertion completed successfully.");
   }
 );
