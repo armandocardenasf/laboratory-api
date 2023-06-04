@@ -1,4 +1,5 @@
 const oMySQLConnection = require("../database");
+const { hashPassword, verifyPassword } = require("../helpers/hashing");
 const {
   generateToken,
   generateRefreshToken,
@@ -34,17 +35,36 @@ const getUsuarioById = (req, res) => {
 };
 
 // LOGIN OF USER.
-const getLogin = (req, res) => {
+const getLogin = async (req, res) => {
   const { oUser, oPass } = req.body;
 
-  // TODO: hash password and modify the function.
+  // grab hashed password from db.
+  query = "SELECT password FROM usuario WHERE correo = ?;";
+  const [rows, fields] = await oMySQLConnection.promise().query(query, [oUser]);
 
-  query = "CALL LoginSP(?,?);";
-  oMySQLConnection.query(query, [oUser, oPass], (err, rows, fields) => {
+  let hashedPassword = "";
+  if (rows.length > 0) {
+    hashedPassword = rows[0].password;
+  } else {
+    res.status(401).send();
+    return;
+  }
+
+  const isValid = await verifyPassword(oPass, hashedPassword);
+
+  if (!isValid) {
+    res.status(401).send();
+    return;
+  }
+
+  // get data from user only if the password is valid.
+  query = "CALL LoginSP(?);";
+  oMySQLConnection.query(query, [oUser], (err, rows, fields) => {
     if (!err) {
       res.json(rows);
     } else {
       console.log(err);
+      res.status(401).send();
     }
   });
 };
@@ -67,7 +87,7 @@ const getNewTokenWithRefreshToken = async (req, res) => {
       }
 
       userTokenData = {
-        email: data.email,
+        id: data.id,
         type: data.type,
       };
     });
@@ -84,10 +104,10 @@ const getNewTokenWithRefreshToken = async (req, res) => {
   }
 
   // check if user exists.
-  let query = "SELECT COUNT(*) as count FROM usuario WHERE correo = ?;";
+  let query = "SELECT COUNT(*) as count FROM usuario WHERE id = ?;";
   const [rows, fields] = await oMySQLConnection
     .promise()
-    .query(query, [userTokenData.email]);
+    .query(query, [userTokenData.id]);
 
   if (rows[0].count == 0) {
     res.status(403).send();
@@ -95,7 +115,7 @@ const getNewTokenWithRefreshToken = async (req, res) => {
   }
 
   // user exists. Get new token.
-  const token = generateToken(userTokenData.email, userTokenData.type);
+  const token = generateToken(userTokenData.id, userTokenData.type);
   res.status(200).json({ token: token });
 };
 
@@ -135,18 +155,38 @@ const getTypeUser = async (idTypeUser) => {
 const getAccessTokens = async (req, res) => {
   /*
   Function which purpose is to get the corresponding JWT and refresh token for the user. The JWT token consists of
-  2 different components, which are the email and the type of the user.
+  2 different components, which are the id and the type of the user.
   */
   const { oUser, oPass } = req.body;
 
   let idTypeUser = 0;
   let typeUser = "";
 
+  let query = "SELECT password FROM usuario WHERE correo = ?;";
+  const [rows, fields] = await oMySQLConnection.promise().query(query, [oUser]);
+
+  let hashedPassword = "";
+  if (rows.length > 0) {
+    hashedPassword = rows[0].password;
+  } else {
+    res.status(401).send();
+    return;
+  }
+
+  // verify the password validity.
+  const isValid = await verifyPassword(oPass, hashedPassword);
+
+  if (!isValid) {
+    res.status(401).send();
+    return;
+  }
+
   try {
-    idTypeUser = await getIdTypeUser(oUser, oPass);
+    idTypeUser = await getIdTypeUser(oUser, hashedPassword);
     typeUser = await getTypeUser(idTypeUser);
   } catch (e) {
     res.status(500).send();
+    return;
   }
 
   if (!typeUser) {
@@ -154,8 +194,23 @@ const getAccessTokens = async (req, res) => {
     return;
   }
 
-  const token = generateToken(oUser, typeUser);
-  const refreshToken = generateRefreshToken(oUser, typeUser);
+  // get the id of the user from the email.
+  query = "SELECT id FROM usuario WHERE correo = ?;";
+  const [rows2, fields2] = await oMySQLConnection
+    .promise()
+    .query(query, [oUser]);
+
+  let idUser = 0;
+
+  if (rows2[0]) {
+    idUser = rows2[0].id;
+  } else {
+    res.status(500).send();
+    return;
+  }
+
+  const token = generateToken(idUser, typeUser);
+  const refreshToken = generateRefreshToken(idUser, typeUser);
 
   const data = {
     token: token,
@@ -163,7 +218,7 @@ const getAccessTokens = async (req, res) => {
   };
 
   // PUT refresh token and expiration date NOW in db.
-  const query = "CALL UpdateRefreshTokenSP(?, ?);";
+  query = "CALL UpdateRefreshTokenSP(?, ?);";
   await oMySQLConnection.promise().query(query, [refreshToken, oUser]);
 
   res.json(data);
@@ -180,14 +235,15 @@ const securedRouteClient = (req, res) => {
 };
 
 //CREATES
-const insertUsuario = (req, res) => {
+const insertUsuario = async (req, res) => {
   const { oNombre, oApellido, oCorreo, oPass, oTelefono, oRolId } = req.body;
 
-  const query = "CALL InsertUsuarioSP(?,?,?,?,?,?);";
+  const hashedPassword = await hashPassword(oPass);
 
+  const query = "CALL InsertUsuarioSP(?,?,?,?,?,?);";
   oMySQLConnection.query(
     query,
-    [oNombre, oApellido, oCorreo, oPass, oTelefono, oRolId],
+    [oNombre, oApellido, oCorreo, hashedPassword, oTelefono, oRolId],
     (err, rows, fields) => {
       if (!err) {
         res.json(rows);
@@ -217,18 +273,23 @@ const updateUsuario = (req, res) => {
     }
   );
 };
-const updatePass = (req, res) => {
+const updatePass = async (req, res) => {
   const { oUsuarioId, oPass } = req.body;
 
-  const query = "CALL UpdatePasswordSP(?,?);";
+  const hashedPassword = await hashPassword(oPass);
 
-  oMySQLConnection.query(query, [oUsuarioId, oPass], (err, rows, fields) => {
-    if (!err) {
-      res.json(rows);
-    } else {
-      console.log(err);
+  const query = "CALL UpdatePasswordSP(?,?);";
+  oMySQLConnection.query(
+    query,
+    [oUsuarioId, hashedPassword],
+    (err, rows, fields) => {
+      if (!err) {
+        res.json(rows);
+      } else {
+        console.log(err);
+      }
     }
-  });
+  );
 };
 
 //DELETES

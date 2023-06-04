@@ -10,8 +10,9 @@ const rolesRouter = require("./routes/roles");
 const suscripcionesRouter = require("./routes/suscripciones");
 const usuarioRouter = require("./routes/usuario");
 const filesRouter = require("./routes/files");
+const desviacionRouter = require("./routes/desviacion");
 const emailRouter = require("./routes/email");
-const pdfRouter = require("./routes/pdf");
+const excelRouter = require("./routes/excel");
 const recepcion = require("./routes/recepcion");
 const app = express();
 
@@ -34,9 +35,10 @@ app.use("/roles", rolesRouter);
 app.use("/suscripciones", suscripcionesRouter);
 app.use("/usuario", usuarioRouter);
 app.use("/files", filesRouter);
+app.use("/desviacion", desviacionRouter);
 app.use("/email", emailRouter);
-app.use("/pdf", pdfRouter);
 app.use("/recepcion", recepcion);
+app.use("/excel", excelRouter);
 
 app.listen(PORT, () => {
   console.log(`SERVER IS RUNNING IN ${PORT}`);

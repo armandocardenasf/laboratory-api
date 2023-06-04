@@ -24,7 +24,7 @@ const sendEmail = async (req, res) => {
     .promise()
     .query(query, [oIdRecepcion]);
 
-  const doc = PdfFormat.getDocument(rows[0]);
+  const doc = new PdfFormat().getDocument(rows[0]);
   const buffer = doc.output();
 
   // set email.

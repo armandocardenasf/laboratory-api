@@ -1,5 +1,5 @@
 # laboratory-api
-First, make sure to have node installed on your computer.
+First, make sure to have node installed on your computer (except if you use docker-compose. In that case, you don't need Node installed).
 
 To run the server on localhost, use the following command:
 ```
