@@ -68,6 +68,8 @@ router.post(
     const results = [];
     let oSumatoria = 0;
     let oArray = [];
+    let oRefAgua = "";
+    let oRefEtanol = "";
     csv()
       .on("headers", (headers) => {
         header = headers;
@@ -81,6 +83,8 @@ router.post(
       results.map((rec, cont) => {
         oSumatoria += Number(rec[header[i]].replace(/[^0-9.]/g, ""));
         oArray.push(Number(rec[header[i]].replace(/[^0-9.]/g, "")));
+        oRefAgua = rec[header[4]];
+        oRefEtanol = rec[header[5]];
       });
       console.log(
         "DESVIACION DE: " + header[i],
@@ -88,19 +92,14 @@ router.post(
       );
       try {
         const oDesviacion = DesviacionEstandar(oSumatoria, oArray);
-        const oParametro = await getParametersId(header[i]);
-        const query = "";
-        oMySQLConnection.query(
-          query,
-          [oDesviacion, oParametro],
-          (err, rows, fields) => {
-            if (!err) {
-              res.json(rows);
-            } else {
-              console.log(err);
-            }
-          }
-        );
+        const oParametro = header[i];
+        const query = "CALL InsertCalculosSP(?,?,?,?);";
+        oMySQLConnection.query(query, [
+          oParametro,
+          oDesviacion.toFixed(4),
+          oRefAgua,
+          oRefEtanol,
+        ]);
       } catch (e) {
         console.log(e);
         res.status(500).send("Something went wrong.");
