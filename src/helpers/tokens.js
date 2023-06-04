@@ -10,7 +10,7 @@ const generateToken = (id, type) => {
     type: type,
   };
 
-  return jwt.sign(data, TOKEN_SECRET, { expiresIn: "15m" });
+  return jwt.sign(data, TOKEN_SECRET, { expiresIn: "20m" });
 };
 
 const generateRefreshToken = (id, type) => {

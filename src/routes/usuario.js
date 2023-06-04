@@ -46,6 +46,6 @@ router.post("/tokens", oUsuarioController.getAccessTokens); // retrieves a token
 router.post("/login", oUsuarioController.getLogin); // retrieves the user's general information.
 
 //POST    /usuario/token/refresh
-router.post("/token/refresh", oUsuarioController.getNewTokenWithRefreshToken); // post the refreshToken and get a token which is valid for 15min neccessary for making other requests.
+router.post("/token/refresh", oUsuarioController.getNewTokenWithRefreshToken); // post the refreshToken and get a token which is valid for 20min neccessary for making other requests.
 
 module.exports = router;

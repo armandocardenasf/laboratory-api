@@ -28,6 +28,8 @@ const getExcelFormat = async (req, res) => {
   const doc = await new ExcelDocument().createFormat(clientData, receptionData);
   const buffer = await doc.getBuffer();
 
+  // const pdf = doc.convertExcelToPDF();
+
   // send excel
   res.setHeader(
     "Content-Type",
@@ -35,6 +37,10 @@ const getExcelFormat = async (req, res) => {
   );
   res.setHeader("Content-Disposition", 'attachment; filename="example.xlsx"');
   res.status(200).send(buffer);
+
+  // res.setHeader("Content-Type", "application/pdf");
+  // res.setHeader("Content-Disposition", 'attachment; filename="example.pdf"');
+  // res.status(200).send(doc);
 };
 
 module.exports = {
