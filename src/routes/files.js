@@ -50,6 +50,19 @@ router.post(
 
     const idParameters = await getParametersId(header);
 
+    // see if any of the results is repeated.
+    for (const analysis of results) {
+      let query = "SELECT Folio FROM Recepcion WHERE Folio = ?;";
+      const [rows, fields] = await oMySQLConnection
+        .promise()
+        .query(query, [analysis["FOLIO"]]);
+
+      if (rows[0].Folio) {
+        res.status(400).send(`Folio ${rows[0].Folio} repetido.`);
+        return;
+      }
+    }
+
     try {
       for (const analysis of results) {
         resultId = await insertResult(analysis, userId);
