@@ -1,6 +1,9 @@
 const ExcelJS = require("exceljs");
+const { PDFDocument } = require("pdf-lib");
+const fs = require("fs");
+const puppeteer = require("puppeteer");
 
-const NUMBER_OF_PARAMETERS_PER_TABLE = 26;
+const NUMBER_OF_PARAMETERS_PER_TABLE = 31;
 
 class ExcelDocument {
   constructor() {
@@ -57,7 +60,7 @@ class ExcelDocument {
 
       detailWorksheet.getCell("W11").value = currSheetData["Nombre"];
       detailWorksheet.getCell("J11").value = currSheetData["Modelo"];
-      detailWorksheet.getCell("J12").value = "Condición";
+      detailWorksheet.getCell("J12").value = currSheetData["Condición muestra"];
 
       detailWorksheet.getCell("G17").value =
         currSheetData["Acidez Titulable (pH=7.0) [g/L [T]]"]; // acidez titulable
@@ -74,10 +77,12 @@ class ExcelDocument {
       detailWorksheet.getCell("G23").value =
         currSheetData["Azúcares totales [g/L]"]; // azúcares totales
       detailWorksheet.getCell("G24").value = currSheetData["Densidad [g/mL]"]; // densidad
-      detailWorksheet.getCell("G25").value = "---"; // estabilidad proteica
-      detailWorksheet.getCell("G26").value = "---"; // estabilidad tartártica
+      detailWorksheet.getCell("G25").value =
+        currSheetData["Estabilidad Proteica"]; // estabilidad proteica
+      detailWorksheet.getCell("G26").value =
+        currSheetData["Estabilidad Tartárica"]; // estabilidad tartártica
       detailWorksheet.getCell("G27").value = currSheetData["Etanol [%vol]"]; // etanol
-      detailWorksheet.getCell("G28").value = "---"; // extracto
+      detailWorksheet.getCell("G28").value = currSheetData["Extracto [g/L]"]; // extracto
       detailWorksheet.getCell("G29").value = currSheetData["Fructosa [g/L]"]; // fructuosa
       detailWorksheet.getCell("G30").value = currSheetData["Glicerol [g/L]"]; // glicerol
       detailWorksheet.getCell("G31").value = currSheetData["Glucosa [g/L]"]; // glucosa
@@ -85,8 +90,8 @@ class ExcelDocument {
       detailWorksheet.getCell("G33").value =
         currSheetData["Polifenoles totales [g/L]"]; // polifenoles totales
       detailWorksheet.getCell("G34").value = currSheetData["Sacarosa [g/L]"]; // sacarosa
-      detailWorksheet.getCell("G35").value = "---"; // sulfitos libres
-      detailWorksheet.getCell("G36").value = "---"; // sulfitos totales
+      detailWorksheet.getCell("G35").value = currSheetData["Sulfitos libres"]; // sulfitos libres
+      detailWorksheet.getCell("G36").value = currSheetData["Sulfitos totales"]; // sulfitos totales
     }
 
     // this.workbook.removeWorksheet("Formato");
@@ -97,6 +102,41 @@ class ExcelDocument {
     const buffer = await this.workbook.xlsx.writeBuffer();
     return buffer;
   }
+
+  // async convertExcelToPDF() {
+  //   const pdfDoc = await PDFDocument.create();
+
+  //   await this.workbook.eachSheet(async (worksheet) => {
+  //     for (const image of worksheet.getImages()) {
+  //       const img = await this.workbook.model.media.find(
+  //         (m) => m.index === image.imageId
+  //       );
+
+  //       const page = pdfDoc.addPage();
+
+  //       console.log(worksheet.name);
+  //       console.log(img.buffer);
+
+  //       try {
+  //         const embeddedImage = await pdfDoc.embedJpg(img.buffer);
+
+  //         const { width, height } = embeddedImage.scale(1);
+  //         page.drawImage(embeddedImage, {
+  //           x: 0,
+  //           y: 0,
+  //           width,
+  //           height,
+  //         });
+  //       } catch (e) {
+  //         console.log(`Error processing image: ${e.message}`);
+  //         continue;
+  //       }
+  //     }
+
+  //     const pdfBytes = await pdfDoc.save();
+  //     return pdfBytes;
+  //   });
+  // }
 }
 
 module.exports = ExcelDocument;

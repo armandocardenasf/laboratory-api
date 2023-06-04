@@ -90,6 +90,12 @@ router.post(
             );
           }
         }
+
+        // insert Estabilidad proteica, Estabilidad tartárica, Sulfitos libres, Sulfitos totales
+        query = "CALL insertAdditionalParameters(?);";
+        const [rows2, fields2] = await oMySQLConnection
+          .promise()
+          .query(query, [resultId]);
       }
     } catch (e) {
       console.log(e);
