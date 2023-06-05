@@ -110,7 +110,19 @@ const deleteRecepcion = (req, res) => {
     }
   });
 };
+const updateEstadoRecepcion = (req, res) => {
+  const { oID, oEnviado } = req.body;
+  console.log(oID, oEnviado);
+  const query = "CALL UpdateEstadoRecepcion(?,?);";
 
+  oMySQLConnection.query(query, [oID, oEnviado], (err, rows, fields) => {
+    if (!err) {
+      res.json(rows);
+    } else {
+      console.log(err);
+    }
+  });
+};
 //EXPORTS
 module.exports = {
   getRecepcion,
@@ -118,4 +130,5 @@ module.exports = {
   insertRecepcion,
   deleteRecepcion,
   updateRecepcion,
+  updateEstadoRecepcion,
 };

@@ -16,5 +16,9 @@ router.post(
 router.put("/", adminAuth, oRecepcionController.updateRecepcion);
 
 router.put("/delete", adminAuth, oRecepcionController.deleteRecepcion);
-
+router.put(
+  "/update/estado",
+  adminAuth,
+  oRecepcionController.updateEstadoRecepcion
+);
 module.exports = router;
