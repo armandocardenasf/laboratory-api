@@ -14,6 +14,7 @@ const desviacionRouter = require("./routes/desviacion");
 const emailRouter = require("./routes/email");
 const excelRouter = require("./routes/excel");
 const recepcion = require("./routes/recepcion");
+const analisisRouter = require("./routes/analisis");
 const app = express();
 
 const PORT = 80;
@@ -39,6 +40,7 @@ app.use("/desviacion", desviacionRouter);
 app.use("/email", emailRouter);
 app.use("/recepcion", recepcion);
 app.use("/excel", excelRouter);
+app.use("/analisis", analisisRouter);
 
 app.listen(PORT, () => {
   console.log(`SERVER IS RUNNING IN ${PORT}`);

@@ -22,7 +22,7 @@ const getExcelFormat = async (req, res) => {
     .query(query, [oIdRecepcion]);
 
   // get the data from deviation & variance.
-  query = "CALL GetDesviacionIncertidumbresSP(?);";
+  query = "CALL GetAnalisisSP(?);";
   [rows3, fields3] = await oMySQLConnection
     .promise()
     .query(query, [oIdRecepcion]);
