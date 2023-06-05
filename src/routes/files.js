@@ -148,12 +148,12 @@ const countResults = async (muestra) => {
   return rows[0].count;
 };
 
-const insertResultParameter = async (parametros_id, resultados_id, valor) => {
+const insertResultParameter = async (oParametrosId, oResultadosId, valor) => {
   const query = "CALL insertResultParameter(?, ?, ?);";
   try {
     await oMySQLConnection
       .promise()
-      .query(query, [parametros_id, resultados_id, valor]);
+      .query(query, [oParametrosId, oResultadosId, valor]);
   } catch (e) {
     res.status(500).send("Something went wrong.");
   }
