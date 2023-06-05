@@ -1,6 +1,6 @@
 const express = require("express");
 const clienteController = require("../controller/cliente-controller");
-const { adminAuth } = require("../helpers/auth");
+const { adminAuth, authUserAndClient } = require("../helpers/auth");
 const router = express.Router();
 
 //GET   /cliente
@@ -10,7 +10,7 @@ router.get("/", adminAuth, clienteController.getCliente);
 router.post("/byid", adminAuth, clienteController.getClienteById);
 
 //POST   /cliente/byid
-router.post("/byExternoId", adminAuth, clienteController.getClienteByExternoId);
+router.post("/byExternoId", authUserAndClient, clienteController.getClienteByExternoId);
 
 //POST  /cliente
 router.post("/", adminAuth, clienteController.insertCliente);

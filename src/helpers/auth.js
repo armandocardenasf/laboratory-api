@@ -94,6 +94,7 @@ const authUserAndClient = (req, res, next) => {
   }
 
   jwt.verify(token, TOKEN_SECRET, (err, data) => {
+    console.log(data)
     if (!data) {
       res.status(401).send();
       return;

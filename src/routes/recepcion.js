@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const oRecepcionController = require("../controller/recepcion-controller");
-const { adminAuth } = require("../helpers/auth");
+const { adminAuth, authUserAndClient } = require("../helpers/auth");
 
 router.get("/", adminAuth, oRecepcionController.getRecepcion);
 
@@ -9,7 +9,7 @@ router.post("/", adminAuth, oRecepcionController.insertRecepcion);
 
 router.post(
   "/byCliente",
-  adminAuth,
+  authUserAndClient,
   oRecepcionController.getRecepcionByCliente
 );
 
