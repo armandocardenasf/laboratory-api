@@ -46,7 +46,7 @@ const getExcelFormat = async (req, res) => {
     "Content-Type",
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
   );
-  res.setHeader("Content-Disposition", 'attachment; filename="example.xlsx"');
+  res.setHeader("Content-Disposition", 'attachment; filename="download.xlsx"');
   res.status(200).send(buffer);
 
   // res.setHeader("Content-Type", "application/pdf");

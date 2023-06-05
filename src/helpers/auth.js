@@ -94,14 +94,17 @@ const authUserAndClient = (req, res, next) => {
   }
 
   jwt.verify(token, TOKEN_SECRET, (err, data) => {
-    console.log(data)
     if (!data) {
       res.status(401).send();
       return;
     }
 
     const isUserOrClient =
-      data.type === "CLIENTE" || data.type === "USUARIO" ? true : false;
+      data.type === "ADMINISTRADOR" ||
+      data.type === "CLIENTE" ||
+      data.type === "USUARIO"
+        ? true
+        : false;
 
     if (err || !isUserOrClient) {
       res.status(403).send();
