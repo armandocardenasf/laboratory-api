@@ -42,27 +42,14 @@ const getExternoByUserId = (req, res) => {
 
 //CREATES
 const insertExterno = (req, res) => {
-  const {
-    oRazonSocial,
-    oRfc,
-    oTelefono,
-    oCorreo,
-    oAtencion,
-    oUsuarioId,
-  } = req.body;
+  const { oRazonSocial, oRfc, oTelefono, oCorreo, oAtencion, oUsuarioId } =
+    req.body;
 
   const query = "CALL InsertExternoSP(?,?,?,?,?,?);";
 
   oMySQLConnection.query(
     query,
-    [
-      oRazonSocial,
-      oRfc,
-      oTelefono,
-      oCorreo,
-      oAtencion,
-      oUsuarioId,
-    ],
+    [oRazonSocial, oRfc, oTelefono, oCorreo, oAtencion, oUsuarioId],
     (err, rows, fields) => {
       if (!err) {
         res.json(rows);
@@ -77,9 +64,6 @@ const insertExterno = (req, res) => {
 const updateExterno = (req, res) => {
   const {
     oExternoId,
-    oNoFolio,
-    oFechaMuestreo,
-    oFechaRecepcion,
     oRazonSocial,
     oRfc,
     oTelefono,
@@ -88,22 +72,11 @@ const updateExterno = (req, res) => {
     oUsuarioId,
   } = req.body;
 
-  const query = "CALL UpdateExternoSP(?,?,?,?,?,?,?,?,?,?);";
+  const query = "CALL UpdateExternoSP(?,?,?,?,?,?,?);";
 
   oMySQLConnection.query(
     query,
-    [
-      oExternoId,
-      oNoFolio,
-      oFechaMuestreo,
-      oFechaRecepcion,
-      oRazonSocial,
-      oRfc,
-      oTelefono,
-      oCorreo,
-      oAtencion,
-      oUsuarioId,
-    ],
+    [oExternoId, oRazonSocial, oRfc, oTelefono, oCorreo, oAtencion, oUsuarioId],
     (err, rows, fields) => {
       if (!err) {
         res.json(rows);
