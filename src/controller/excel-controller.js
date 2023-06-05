@@ -16,16 +16,27 @@ const getExcelFormat = async (req, res) => {
   }
 
   // get all the data from the reception & client.
-  query = "CALL GetExcelClientDataSP(?)"; //
+  query = "CALL GetExcelClientDataSP(?);"; //
   [rows2, fields2] = await oMySQLConnection
     .promise()
     .query(query, [oIdRecepcion]);
 
+  // get the data from deviation & variance.
+  query = "CALL GetDesviacionIncertidumbresSP(?);";
+  [rows3, fields3] = await oMySQLConnection
+    .promise()
+    .query(query, [oIdRecepcion]);
+
   // client and reception.
+  const standardData = rows3[0];
   const clientData = rows2[0][0];
   const receptionData = rows[0];
 
-  const doc = await new ExcelDocument().createFormat(clientData, receptionData);
+  const doc = await new ExcelDocument().createFormat(
+    clientData,
+    receptionData,
+    standardData
+  );
   const buffer = await doc.getBuffer();
 
   // const pdf = doc.convertExcelToPDF();
