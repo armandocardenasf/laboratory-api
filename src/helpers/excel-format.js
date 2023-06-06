@@ -48,6 +48,23 @@ class ExcelDocument {
     }
 
     let currSheetData;
+    currSheetData = [];
+    for (
+      let i = 0;
+      i < Math.floor(receptionData.length / NUMBER_OF_PARAMETERS_PER_TABLE);
+      i++
+    ) {
+      // organize the inputted data in an object.
+
+      for (let j = 0; j < NUMBER_OF_PARAMETERS_PER_TABLE; j++) {
+        const { nombre, unidades, valor } =
+          receptionData[i * NUMBER_OF_PARAMETERS_PER_TABLE + j];
+        if (!currSheetData[nombre]) {
+          currSheetData[nombre] = [];
+        }
+        currSheetData[nombre].push(valor);
+      }
+    }
     for (
       let i = 0;
       i < Math.floor(receptionData.length / NUMBER_OF_PARAMETERS_PER_TABLE);
@@ -62,65 +79,51 @@ class ExcelDocument {
         mergeCells: formatWorksheet.model.merges,
       });
       detailWorksheet.name = `Detalle ${i + 1}`;
-
-      // organize the inputted data in an object.
-      currSheetData = Object();
-      for (let j = 0; j < NUMBER_OF_PARAMETERS_PER_TABLE; j++) {
-        console.log("j", j);
-        console.log("i", i);
-        console.log("numpar", i * NUMBER_OF_PARAMETERS_PER_TABLE + j);
-        const { nombre, unidades, valor } =
-          receptionData[i * NUMBER_OF_PARAMETERS_PER_TABLE + j];
-
-        currSheetData[nombre] = valor;
-      }
-      console.log(currSheetData);
-
-      detailWorksheet.getCell("W11").value = currSheetData["Nombre"] ?? "";
-      detailWorksheet.getCell("J11").value = currSheetData["Modelo"] ?? "";
+      detailWorksheet.getCell("W11").value = currSheetData["Nombre"][i] ?? "";
+      detailWorksheet.getCell("J11").value = currSheetData["Modelo"][i] ?? "";
       detailWorksheet.getCell("J12").value =
-        currSheetData["Condición muestra"] ?? "";
+        currSheetData["Condición muestra"][i] ?? "";
 
       // data of parameter
       detailWorksheet.getCell("G17").value =
-        currSheetData["Acidez Titulable (pH=7.0) [g/L [T]]"] ?? ""; // acidez titulable
+        currSheetData["Acidez Titulable (pH=7.0) [g/L [T]]"][i] ?? ""; // acidez titulable
       detailWorksheet.getCell("G18").value =
-        currSheetData["Ácido glucónico [g/L]"] ?? ""; // acidez glucónico
+        currSheetData["Ácido glucónico [g/L]"][i] ?? ""; // acidez glucónico
       detailWorksheet.getCell("G19").value =
-        currSheetData["Ácido Málico [g/L]"] ?? ""; // acidez málico
+        currSheetData["Ácido Málico [g/L]"][i] ?? ""; // acidez málico
       detailWorksheet.getCell("G20").value =
-        currSheetData["Ácido Láctico [g/L]"] ?? ""; // acidez láctico
+        currSheetData["Ácido Láctico [g/L]"][i] ?? ""; // acidez láctico
       detailWorksheet.getCell("G21").value =
-        currSheetData["Ácido Tartárico [g/L]"] ?? ""; // acidez tartárico
+        currSheetData["Ácido Tartárico [g/L]"][i] ?? ""; // acidez tartárico
       detailWorksheet.getCell("G22").value =
-        currSheetData["Ácidos volátiles [g/L [A]]"] ?? ""; // acidez volátiles
+        currSheetData["Ácidos volátiles [g/L [A]]"][i] ?? ""; // acidez volátiles
       detailWorksheet.getCell("G23").value =
-        currSheetData["Azúcares totales [g/L]"] ?? ""; // azúcares totales
+        currSheetData["Azúcares totales [g/L]"][i] ?? ""; // azúcares totales
       detailWorksheet.getCell("G24").value =
-        currSheetData["Densidad [g/mL]"] ?? ""; // densidad
+        currSheetData["Densidad [g/mL]"][i] ?? ""; // densidad
       detailWorksheet.getCell("G25").value =
-        currSheetData["Estabilidad Proteica"] ?? ""; // estabilidad proteica
+        currSheetData["Estabilidad Proteica"][i] ?? ""; // estabilidad proteica
       detailWorksheet.getCell("G26").value =
-        currSheetData["Estabilidad Tartárica"] ?? ""; // estabilidad tartártica
+        currSheetData["Estabilidad Tartárica"][i] ?? ""; // estabilidad tartártica
       detailWorksheet.getCell("G27").value =
-        currSheetData["Etanol [%vol]"] ?? ""; // etanol
+        currSheetData["Etanol [%vol]"][i] ?? ""; // etanol
       detailWorksheet.getCell("G28").value =
-        currSheetData["Extracto [g/L]"] ?? ""; // extracto
+        currSheetData["Extracto [g/L]"][i] ?? ""; // extracto
       detailWorksheet.getCell("G29").value =
-        currSheetData["Fructosa [g/L]"] ?? ""; // fructuosa
+        currSheetData["Fructosa [g/L]"][i] ?? ""; // fructuosa
       detailWorksheet.getCell("G30").value =
-        currSheetData["Glicerol [g/L]"] ?? ""; // glicerol
+        currSheetData["Glicerol [g/L]"][i] ?? ""; // glicerol
       detailWorksheet.getCell("G31").value =
-        currSheetData["Glucosa [g/L]"] ?? ""; // glucosa
-      detailWorksheet.getCell("G32").value = currSheetData["pH []"] ?? ""; // pH
+        currSheetData["Glucosa [g/L]"][i] ?? ""; // glucosa
+      detailWorksheet.getCell("G32").value = currSheetData["pH []"][i] ?? ""; // pH
       detailWorksheet.getCell("G33").value =
-        currSheetData["Polifenoles totales [g/L]"] ?? ""; // polifenoles totales
+        currSheetData["Polifenoles totales [g/L]"][i] ?? ""; // polifenoles totales
       detailWorksheet.getCell("G34").value =
-        currSheetData["Sacarosa [g/L]"] ?? ""; // sacarosa
+        currSheetData["Sacarosa [g/L]"][i] ?? ""; // sacarosa
       detailWorksheet.getCell("G35").value =
-        currSheetData["Sulfitos libres"] ?? ""; // sulfitos libres
+        currSheetData["Sulfitos libres"][i] ?? ""; // sulfitos libres
       detailWorksheet.getCell("G36").value =
-        currSheetData["Sulfitos totales"] ?? ""; // sulfitos totales
+        currSheetData["Sulfitos totales"][i] ?? ""; // sulfitos totales
 
       // deviation
       detailWorksheet.getCell("O17").value =
@@ -190,7 +193,6 @@ class ExcelDocument {
       detailWorksheet.getCell("Q36").value =
         variances["Sulfitos totales"] ?? ""; // sulfitos totales
     }
-
     // this.workbook.removeWorksheet("Formato");
     return this;
   }
