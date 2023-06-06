@@ -15,23 +15,30 @@ class ExcelDocument {
     await this.workbook.xlsx.readFile("./src/assets/format.xlsx");
 
     const generalInfoWorksheet = this.workbook.getWorksheet("Portada");
-    generalInfoWorksheet.getCell("L12").value = clientData["TotalMuestras"]; // Número de muestras
-    generalInfoWorksheet.getCell("H13").value = clientData["observaciones"]; // Observaciones generales
+    generalInfoWorksheet.getCell("L12").value =
+      clientData["TotalMuestras"] ?? ""; // Número de muestras
+    generalInfoWorksheet.getCell("H13").value =
+      clientData["observaciones"] ?? ""; // Observaciones generales
 
     // general information about the results.
-    generalInfoWorksheet.getCell("X10").value = clientData["Folio"]; // Número de folio
-    generalInfoWorksheet.getCell("X11").value = clientData["FechaInforme"]; // Fecha de informe
-    generalInfoWorksheet.getCell("X12").value = clientData["FechaAnalisis"]; // Fecha de análisis
-    generalInfoWorksheet.getCell("X13").value = clientData["FechaRecepcion"]; // Fecha de recepción
-    generalInfoWorksheet.getCell("X14").value = clientData["FechaMuestreo"]; // Fecha de muestreo
+    generalInfoWorksheet.getCell("X10").value = clientData["Folio"] ?? ""; // Número de folio
+    generalInfoWorksheet.getCell("X11").value =
+      clientData["FechaInforme"] ?? ""; // Fecha de informe
+    generalInfoWorksheet.getCell("X12").value =
+      clientData["FechaAnalisis"] ?? ""; // Fecha de análisis
+    generalInfoWorksheet.getCell("X13").value =
+      clientData["FechaRecepcion"] ?? ""; // Fecha de recepción
+    generalInfoWorksheet.getCell("X14").value =
+      clientData["FechaMuestreo"] ?? ""; // Fecha de muestreo
 
     // data of the client.
-    generalInfoWorksheet.getCell("I18").value = clientData["razon_social"]; // Nombre / razón social
-    generalInfoWorksheet.getCell("I19").value = clientData["direccion"]; // Dirección de facturación
-    generalInfoWorksheet.getCell("I20").value = clientData["rfc"]; // RFC
-    generalInfoWorksheet.getCell("I21").value = clientData["telefono"]; // No. Teléfono
-    generalInfoWorksheet.getCell("I22").value = clientData["correo"]; // Correo electrónico
-    generalInfoWorksheet.getCell("I22").value = clientData["atencion"]; // Con atención a
+    generalInfoWorksheet.getCell("I18").value =
+      clientData["razon_social"] ?? ""; // Nombre / razón social
+    generalInfoWorksheet.getCell("I19").value = clientData["direccion"] ?? ""; // Dirección de facturación
+    generalInfoWorksheet.getCell("I20").value = clientData["rfc"] ?? ""; // RFC
+    generalInfoWorksheet.getCell("I21").value = clientData["telefono"] ?? ""; // No. Teléfono
+    generalInfoWorksheet.getCell("I22").value = clientData["correo"] ?? ""; // Correo electrónico
+    generalInfoWorksheet.getCell("I22").value = clientData["atencion"] ?? ""; // Con atención a
 
     let [deviations, variances] = [Object(), Object()];
     for (const item of deviationAndVarianceData) {
@@ -59,15 +66,20 @@ class ExcelDocument {
       // organize the inputted data in an object.
       currSheetData = Object();
       for (let j = 0; j < NUMBER_OF_PARAMETERS_PER_TABLE; j++) {
+        console.log("j", j);
+        console.log("i", i);
+        console.log("numpar", i * NUMBER_OF_PARAMETERS_PER_TABLE + j);
         const { nombre, unidades, valor } =
           receptionData[i * NUMBER_OF_PARAMETERS_PER_TABLE + j];
 
         currSheetData[nombre] = valor;
       }
+      console.log(currSheetData);
 
-      detailWorksheet.getCell("W11").value = currSheetData["Nombre"];
-      detailWorksheet.getCell("J11").value = currSheetData["Modelo"];
-      detailWorksheet.getCell("J12").value = currSheetData["Condición muestra"];
+      detailWorksheet.getCell("W11").value = currSheetData["Nombre"] ?? "";
+      detailWorksheet.getCell("J11").value = currSheetData["Modelo"] ?? "";
+      detailWorksheet.getCell("J12").value =
+        currSheetData["Condición muestra"] ?? "";
 
       // data of parameter
       detailWorksheet.getCell("G17").value =
