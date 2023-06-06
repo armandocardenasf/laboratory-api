@@ -34,9 +34,12 @@ const insertRecepcion = (req, res) => {
     oTotalMuestras,
     oClienteID,
     oTipoMuestra,
+    oObservaciones,
+    oFechaInforme,
+    oFechaAnalisis,
   } = req.body;
-
-  const query = "CALL InsertRecepcionSP(?,?,?,?,?,?);";
+  console.log(req.body);
+  const query = "CALL InsertRecepcionSP(?,?,?,?,?,?,?,?,?);";
 
   oMySQLConnection.query(
     query,
@@ -47,6 +50,9 @@ const insertRecepcion = (req, res) => {
       oTotalMuestras,
       oClienteID,
       oTipoMuestra,
+      oObservaciones,
+      oFechaInforme,
+      oFechaAnalisis,
     ],
     (err, rows, fields) => {
       if (!err) {
