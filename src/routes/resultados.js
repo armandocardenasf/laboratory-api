@@ -3,7 +3,7 @@ const resultadosController = require("../controller/resultados-controller");
 const { adminAuth } = require("../helpers/auth");
 const router = express.Router();
 
-//GET   /resultados
+//POST   /resultados
 router.post("/", adminAuth, resultadosController.getResultados);
 
 //GET   /resultados/all/:clientId
