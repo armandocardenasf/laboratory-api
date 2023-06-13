@@ -3,7 +3,7 @@ const usuarioResultadosController = require("../controller/usuario-resultados-co
 const { adminAuth } = require("../helpers/auth");
 const router = express.Router();
 
-//PUT   /cliente/delete
+//PUT   /usuario-resultados/delete
 router.put("/delete", adminAuth, usuarioResultadosController.deleteAnalisis);
 
 module.exports = router;
