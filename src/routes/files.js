@@ -66,6 +66,7 @@ router.post(
           .send(
             `Los datos del folio ${rows[0].folio} ya fueron subidos exitosamente.`
           );
+        return;
       }
     }
 
