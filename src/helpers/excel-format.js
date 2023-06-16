@@ -14,7 +14,16 @@ class ExcelDocument {
     // load copy of format.
     await this.workbook.xlsx.readFile("./src/assets/format.xlsx");
 
+    // num of pages which contain data about the analysis.
+    const numDetailPages = Math.floor(
+      receptionData.length / NUMBER_OF_PARAMETERS_PER_TABLE
+    );
+    const numPages = numDetailPages + 1;
     const generalInfoWorksheet = this.workbook.getWorksheet("Portada");
+
+    generalInfoWorksheet.getCell("Y5").value = 1; // curr page
+    generalInfoWorksheet.getCell("AA5").value = numPages; // tot pages
+
     generalInfoWorksheet.getCell("L12").value =
       clientData["TotalMuestras"] ?? ""; // Número de muestras
     generalInfoWorksheet.getCell("H13").value =
@@ -49,11 +58,7 @@ class ExcelDocument {
 
     let currSheetData;
     currSheetData = [];
-    for (
-      let i = 0;
-      i < Math.floor(receptionData.length / NUMBER_OF_PARAMETERS_PER_TABLE);
-      i++
-    ) {
+    for (let i = 0; i < numDetailPages; i++) {
       // organize the inputted data in an object.
 
       for (let j = 0; j < NUMBER_OF_PARAMETERS_PER_TABLE; j++) {
@@ -79,10 +84,16 @@ class ExcelDocument {
         mergeCells: formatWorksheet.model.merges,
       });
       detailWorksheet.name = `Detalle ${i + 1}`;
+      detailWorksheet.getCell("W10").value = i + 1; // curr number of analysis
+
       detailWorksheet.getCell("W11").value = currSheetData["Nombre"][i] ?? "";
       detailWorksheet.getCell("J11").value = currSheetData["Modelo"][i] ?? "";
       detailWorksheet.getCell("J12").value =
         currSheetData["Condición muestra"][i] ?? "";
+
+      // pagination
+      detailWorksheet.getCell("Y5").value = i + 2; // curr page
+      detailWorksheet.getCell("AA5").value = numPages; // tot pages
 
       // data of parameter
       detailWorksheet.getCell("G17").value =
@@ -193,7 +204,7 @@ class ExcelDocument {
       detailWorksheet.getCell("Q36").value =
         variances["Sulfitos totales"] ?? ""; // sulfitos totales
     }
-    // this.workbook.removeWorksheet("Formato");
+    this.workbook.removeWorksheet("Formato");
     return this;
   }
 
