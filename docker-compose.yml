@@ -10,5 +10,5 @@ services:
       - DATABASE
       - TOKEN_SECRET
       - REFRESH_TOKEN_SECRET
-    # env_file:
-    #   - .env
+    env_file:
+      - .env
