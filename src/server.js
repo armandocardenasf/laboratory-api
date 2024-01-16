@@ -17,7 +17,7 @@ const recepcion = require("./routes/recepcion");
 const analisisRouter = require("./routes/analisis");
 const app = express();
 
-const PORT = 80;
+const PORT = 5000;
 
 app.use(express.json());
 app.use(cors({ credentials: false, origin: "*" }));
