@@ -12,7 +12,7 @@ It's recommended the use of Postman Desktop for testing purposes.
 
 If you want to use Docker Compose instead of the node command, you can use the following command:
 ```
-docker-compose up --build
+docker-compose up --build -d
 ```
 
 Be sure of be working on a separate branch before pushing to main ;)
